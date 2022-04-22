@@ -2,6 +2,7 @@ import store from '@/store'
 import storage from 'store'
 import {
   ACCESS_TOKEN,
+  REFRESH_TOKEN,
   APP_LANGUAGE,
   TOGGLE_CONTENT_WIDTH,
   TOGGLE_FIXED_HEADER,
@@ -9,12 +10,10 @@ import {
   TOGGLE_LAYOUT, TOGGLE_NAV_THEME, TOGGLE_WEAK,
   TOGGLE_COLOR, TOGGLE_MULTI_TAB
 } from '@/store/mutation-types'
-import { printANSI } from '@/utils/screenLog'
+
 import defaultSettings from '@/config/defaultSettings'
 
 export default function Initializer () {
-  printANSI() // 请自行移除该行.  please remove this line
-
   store.commit(TOGGLE_LAYOUT, storage.get(TOGGLE_LAYOUT, defaultSettings.layout))
   store.commit(TOGGLE_FIXED_HEADER, storage.get(TOGGLE_FIXED_HEADER, defaultSettings.fixedHeader))
   store.commit(TOGGLE_FIXED_SIDEBAR, storage.get(TOGGLE_FIXED_SIDEBAR, defaultSettings.fixSiderbar))
@@ -24,8 +23,9 @@ export default function Initializer () {
   store.commit(TOGGLE_WEAK, storage.get(TOGGLE_WEAK, defaultSettings.colorWeak))
   store.commit(TOGGLE_COLOR, storage.get(TOGGLE_COLOR, defaultSettings.primaryColor))
   store.commit(TOGGLE_MULTI_TAB, storage.get(TOGGLE_MULTI_TAB, defaultSettings.multiTab))
-  store.commit('SET_TOKEN', storage.get(ACCESS_TOKEN))
+  store.commit('SET_ACCESS_TOKEN', storage.get(ACCESS_TOKEN))
+  store.commit('SET_REFRESH_TOKEN', storage.get(REFRESH_TOKEN))
 
-  store.dispatch('setLang', storage.get(APP_LANGUAGE, 'en-US'))
+  store.dispatch('setLang', storage.get(APP_LANGUAGE, 'zh-CN'))
   // last step
 }

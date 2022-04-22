@@ -1,16 +1,17 @@
 import request from '@/utils/request'
+import qs from 'qs'
 
 const userApi = {
-  Login: '/auth/login',
-  Logout: '/auth/logout',
-  ForgePassword: '/auth/forge-password',
-  Register: '/auth/register',
-  twoStepCode: '/auth/2step-code',
+  Login: '/cmp/login',
+  Logout: '/cmp/logout',
+  ForgePassword: '/cmp/forge-password',
+  Register: '/cmp/register',
+  twoStepCode: '/cmp/2step-code',
   SendSms: '/account/sms',
   SendSmsErr: '/account/sms_err',
   // get my info
-  UserInfo: '/user/info',
-  UserMenu: '/user/nav'
+  UserInfo: '/cmp/user/info',
+  UserMenu: '/cmp/user/menu'
 }
 
 /**
@@ -28,7 +29,7 @@ export function login (parameter) {
   return request({
     url: userApi.Login,
     method: 'post',
-    data: parameter
+    data: qs.stringify(parameter)
   })
 }
 

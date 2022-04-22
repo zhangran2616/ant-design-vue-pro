@@ -13,7 +13,7 @@
         @change="handleTabClick"
       >
         <a-tab-pane key="tab1" :tab="$t('user.login.tab-login-credentials')">
-          <a-alert v-if="isLoginError" type="error" showIcon style="margin-bottom: 24px;" :message="$t('user.login.message-invalid-credentials')" />
+          <a-alert v-if="isLoginError" type="error" showIcon style="margin-bottom: 24px;" :message="logErrorMsg" />
           <a-form-item>
             <a-input
               size="large"
@@ -114,7 +114,7 @@
 </template>
 
 <script>
-import md5 from 'md5'
+// import md5 from 'md5'
 import TwoStepCaptcha from '@/components/tools/TwoStepCaptcha'
 import { mapActions } from 'vuex'
 import { timeFix } from '@/utils/util'
@@ -133,12 +133,14 @@ export default {
       isLoginError: false,
       requiredTwoStepCaptcha: false,
       stepCaptchaVisible: false,
+      // 登录失败之后返回错误消息
+      logErrorMsg: '登录失败',
       form: this.$form.createForm(this),
       state: {
         time: 60,
         loginBtn: false,
         // login type: 0 email, 1 username, 2 telephone
-        loginType: 0,
+        loginType: 1,
         smsSendBtn: false
       }
     }
@@ -189,7 +191,8 @@ export default {
           const loginParams = { ...values }
           delete loginParams.username
           loginParams[!state.loginType ? 'email' : 'username'] = values.username
-          loginParams.password = md5(values.password)
+          // loginParams.password = md5(values.password)
+          loginParams.password = values.password
           Login(loginParams)
             .then((res) => this.loginSuccess(res))
             .catch(err => this.requestFailed(err))
@@ -271,9 +274,11 @@ export default {
     },
     requestFailed (err) {
       this.isLoginError = true
+      this.logErrorMsg = err.message
       this.$notification['error']({
         message: '错误',
-        description: ((err.response || {}).data || {}).message || '请求出现错误，请稍后再试',
+        // description: ((err.response || {}).data || {}).message || '请求出现错误，请稍后再试',
+        description: ((err.response || {}).data || {}).message || err.message,
         duration: 4
       })
     }

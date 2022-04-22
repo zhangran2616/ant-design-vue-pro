@@ -6,7 +6,7 @@
       <a href="https://www.github.com/sendya/" target="_blank">@Sendya</a>
     </template>
     <template v-slot:copyright>
-      <a href="https://github.com/vueComponent" target="_blank">vueComponent</a>
+      <a href="http://www.tuocloud.cn" target="_blank"> © 上海拓云信息科技有限公司  |  沪ICP备19040945号-1</a>
     </template>
   </global-footer>
 </template>

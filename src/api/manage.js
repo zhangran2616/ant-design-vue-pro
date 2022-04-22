@@ -1,10 +1,13 @@
 import request from '@/utils/request'
 
 const api = {
-  user: '/user',
-  role: '/role',
-  service: '/service',
-  permission: '/permission',
+  user: '/cmp/user/queryUser',
+  addUser: '/cmp/user/addUser',
+  updateUser: '/cmp/user/updateUser',
+  deleteUser: '/cmp/user/deleteUser',
+  role: '/cmp/role/role',
+  service: '/cmp/service',
+  permission: '/cmp/permission',
   permissionNoPager: '/permission/no-pager',
   orgTree: '/org/tree'
 }
@@ -14,6 +17,30 @@ export default api
 export function getUserList (parameter) {
   return request({
     url: api.user,
+    method: 'get',
+    params: parameter
+  })
+}
+
+export function addUser (parameter) {
+  return request({
+    url: api.addUser,
+    method: 'post',
+    data: parameter
+  })
+}
+
+export function updateUser (parameter) {
+  return request({
+    url: api.updateUser,
+    method: 'post',
+    data: parameter
+  })
+}
+
+export function deleteUser (parameter) {
+  return request({
+    url: api.deleteUser,
     method: 'get',
     params: parameter
   })

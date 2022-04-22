@@ -1,11 +1,12 @@
 import storage from 'store'
 import { login, getInfo, logout } from '@/api/login'
-import { ACCESS_TOKEN } from '@/store/mutation-types'
+import { ACCESS_TOKEN, REFRESH_TOKEN } from '@/store/mutation-types'
 import { welcome } from '@/utils/util'
 
 const user = {
   state: {
-    token: '',
+    access_token: '',
+    refresh_token: '',
     name: '',
     welcome: '',
     avatar: '',
@@ -14,8 +15,11 @@ const user = {
   },
 
   mutations: {
-    SET_TOKEN: (state, token) => {
-      state.token = token
+    SET_ACCESS_TOKEN: (state, token) => {
+      state.access_token = token
+    },
+    SET_REFRESH_TOKEN: (state, token) => {
+      state.refresh_token = token
     },
     SET_NAME: (state, { name, welcome }) => {
       state.name = name
@@ -37,9 +41,14 @@ const user = {
     Login ({ commit }, userInfo) {
       return new Promise((resolve, reject) => {
         login(userInfo).then(response => {
-          const result = response.result
-          storage.set(ACCESS_TOKEN, result.token, 7 * 24 * 60 * 60 * 1000)
-          commit('SET_TOKEN', result.token)
+          const result = response.data
+          if (result == null) {
+            throw new Error(response.message)
+          }
+          storage.set(ACCESS_TOKEN, result.accessToken, 7 * 24 * 60 * 60 * 1000)
+          storage.set(REFRESH_TOKEN, result.refreshToken, 30 * 24 * 60 * 60 * 1000)
+          commit('SET_ACCESS_TOKEN', result.accessToken)
+          commit('SET_REFRESH_TOKEN', result.refreshToken)
           resolve()
         }).catch(error => {
           reject(error)
@@ -51,7 +60,7 @@ const user = {
     GetInfo ({ commit }) {
       return new Promise((resolve, reject) => {
         getInfo().then(response => {
-          const result = response.result
+          const result = response.data
 
           if (result.role && result.role.permissions.length > 0) {
             const role = result.role
@@ -83,9 +92,11 @@ const user = {
     Logout ({ commit, state }) {
       return new Promise((resolve) => {
         logout(state.token).then(() => {
-          commit('SET_TOKEN', '')
+          commit('SET_ACCESS_TOKEN', '')
+          commit('SET_REFRESH_TOKEN', '')
           commit('SET_ROLES', [])
           storage.remove(ACCESS_TOKEN)
+          storage.remove(REFRESH_TOKEN)
           resolve()
         }).catch((err) => {
           console.log('logout fail:', err)

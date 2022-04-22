@@ -86,11 +86,11 @@ export const generatorDynamicRouter = token => {
       .getCurrentUserNav(token)
       .then(res => {
         console.log('generatorDynamicRouter response:', res)
-        const { result } = res
+        const { data } = res
         const menuNav = []
         const childrenNav = []
         //      后端数据, 根级树数组,  根级 PID
-        listToTree(result, childrenNav, 0)
+        listToTree(data, childrenNav, 0)
         rootRouter.children = childrenNav
         menuNav.push(rootRouter)
         console.log('menuNav', menuNav)
