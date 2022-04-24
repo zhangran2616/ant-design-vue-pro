@@ -49,7 +49,7 @@
         ref="permissionModal"
         :visible="visiblePermission"
         :loading="confirmPermissionLoading"
-        :model="mdl"
+        :model="mdlPermission"
         @cancel="handlePermissionCancel"
         @ok="handlePermissionOk"
       />
@@ -105,6 +105,7 @@ export default {
       visiblePermission: false,
       confirmPermissionLoading: false,
       mdl: null,
+      mdlPermission: null,
       // 查询参数
       queryParam: {},
       // 加载数据方法 必须为 Promise 对象
@@ -141,7 +142,7 @@ export default {
     },
     handlePermission (record) {
       this.visiblePermission = true
-      this.mdl = { ...record }
+      this.mdlPermission = { ...record }
     },
     handleOk () {
       const form = this.$refs.createModal.form
