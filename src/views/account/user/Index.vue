@@ -101,7 +101,6 @@
         @cancel="handleCancel"
         @ok="handleOk"
       />
-      <step-by-step-modal ref="modal" @ok="handleOk"/>
     </a-card>
   </page-header-wrapper>
 </template>
@@ -110,7 +109,6 @@
 import moment from 'moment'
 import { STable, Ellipsis } from '@/components'
 import { getUserList, addUser, updateUser, deleteUser } from '@/api/manage'
-import StepByStepModal from './modules/StepByStepModal'
 import CreateForm from './modules/CreateForm'
 
 const columns = [
@@ -162,8 +160,7 @@ export default {
   components: {
     STable,
     Ellipsis,
-    CreateForm,
-    StepByStepModal
+    CreateForm
   },
   data () {
     this.columns = columns
