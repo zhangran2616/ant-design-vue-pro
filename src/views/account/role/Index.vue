@@ -29,7 +29,7 @@
           <template>
             <a @click="handleEdit(record)">修改</a>
             <a-divider type="vertical" />
-            <a @click="handleEdit(record)">权限</a>
+            <a @click="handlePermission(record)">权限</a>
             <a-divider type="vertical" />
             <!--<a @click="handleDel(record)">删除</a> -->
           </template>
@@ -44,6 +44,15 @@
         @cancel="handleCancel"
         @ok="handleOk"
       />
+
+      <permission-form
+        ref="permissionModal"
+        :visible="visiblePermission"
+        :loading="confirmPermissionLoading"
+        :model="mdl"
+        @cancel="handlePermissionCancel"
+        @ok="handlePermissionOk"
+      />
     </a-card>
   </page-header-wrapper>
 </template>
@@ -52,6 +61,7 @@
 import { STable, Ellipsis } from '@/components'
 import { getRoleList, addRole, updateRole, deleteRole } from '@/api/manage'
 import CreateForm from './modules/CreateForm'
+import PermissionForm from './modules/PermissionForm'
 
 const columns = [
   {
@@ -83,7 +93,8 @@ export default {
   components: {
     STable,
     Ellipsis,
-    CreateForm
+    CreateForm,
+    PermissionForm
   },
   data () {
     this.columns = columns
@@ -91,6 +102,8 @@ export default {
       // create model
       visible: false,
       confirmLoading: false,
+      visiblePermission: false,
+      confirmPermissionLoading: false,
       mdl: null,
       // 查询参数
       queryParam: {},
@@ -124,6 +137,10 @@ export default {
     },
     handleEdit (record) {
       this.visible = true
+      this.mdl = { ...record }
+    },
+    handlePermission (record) {
+      this.visiblePermission = true
       this.mdl = { ...record }
     },
     handleOk () {
@@ -185,6 +202,13 @@ export default {
     onSelectChange (selectedRowKeys, selectedRows) {
       this.selectedRowKeys = selectedRowKeys
       this.selectedRows = selectedRows
+    },
+    handlePermissionCancel () {
+      this.visiblePermission = false
+    },
+    handlePermissionOk (data, roleId) {
+      console.log(data, roleId)
+      this.confirmPermissionLoading = true
     }
   }
 }

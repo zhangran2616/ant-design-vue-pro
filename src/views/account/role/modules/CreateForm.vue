@@ -17,7 +17,7 @@
           <a-input v-decorator="['name', {rules: [{required: true, min: 1, max: 10, message: '请输入名称长度1-10个字符！'}]}]" />
         </a-form-item>
         <a-form-item label="描述">
-          <a-input v-decorator="['description', {rules: [{required: true, min: 5, max: 100, message: '请输入描述长度5-100个字符！'}]}]" />
+          <a-input v-decorator="['description', {rules: [{required: true, min: 1, max: 100, message: '请输入描述长度1-100个字符！'}]}]" />
         </a-form-item>
       </a-form>
     </a-spin>

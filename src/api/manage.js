@@ -7,6 +7,7 @@ const api = {
   deleteUser: '/cmp/user/deleteUser',
   role: '/cmp/role/queryRole',
   addRole: '/cmp/role/addRole',
+  getRolePermission: '/cmp/role/getRolePermission',
   updateRole: '/cmp/role/updateRole',
   deleteRole: '/cmp/role/deleteRole',
   service: '/cmp/service',
@@ -76,6 +77,14 @@ export function updateRole (parameter) {
 export function deleteRole (parameter) {
   return request({
     url: api.deleteRole,
+    method: 'get',
+    params: parameter
+  })
+}
+
+export function getRolePermission (parameter) {
+  return request({
+    url: api.getRolePermission,
     method: 'get',
     params: parameter
   })
