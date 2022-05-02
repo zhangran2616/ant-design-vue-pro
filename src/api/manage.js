@@ -10,6 +10,7 @@ const api = {
   getRolePermission: '/cmp/role/getRolePermission',
   updateRole: '/cmp/role/updateRole',
   deleteRole: '/cmp/role/deleteRole',
+  queryLog: '/cmp/log/queryLog',
   service: '/cmp/service',
   permission: '/cmp/permission',
   permissionNoPager: '/permission/no-pager',
@@ -93,6 +94,14 @@ export function getRolePermission (parameter) {
 export function getServiceList (parameter) {
   return request({
     url: api.service,
+    method: 'get',
+    params: parameter
+  })
+}
+
+export function queryLog (parameter) {
+  return request({
+    url: api.queryLog,
     method: 'get',
     params: parameter
   })
