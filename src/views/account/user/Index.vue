@@ -51,7 +51,7 @@
       </div>
 
       <div class="table-operator">
-        <a-button type="primary" icon="plus" @click="handleAdd">新建</a-button>
+        <a-button type="primary" icon="plus" v-action:userAdd @click="handleAdd">新建</a-button>
         <a-dropdown v-action:edit v-if="selectedRowKeys.length > 0">
           <a-menu slot="overlay">
             <a-menu-item key="1"><a-icon type="delete" />删除</a-menu-item>
@@ -67,7 +67,7 @@
       <s-table
         ref="table"
         size="default"
-        rowKey="key"
+        rowKey="id"
         :columns="columns"
         :data="loadData"
         :alert="true"
@@ -86,9 +86,9 @@
 
         <span slot="action" slot-scope="text, record">
           <template>
-            <a @click="handleEdit(record)">修改</a>
+            <a v-action:userUpdate @click="handleEdit(record)">修改</a>
             <a-divider type="vertical" />
-            <a @click="handleDel(record)">删除</a>
+            <a v-action:userDelete @click="handleDel(record)">删除</a>
           </template>
         </span>
       </s-table>
@@ -98,6 +98,7 @@
         :visible="visible"
         :loading="confirmLoading"
         :model="mdl"
+        :roles="roles"
         @cancel="handleCancel"
         @ok="handleOk"
       />
@@ -108,7 +109,7 @@
 <script>
 import moment from 'moment'
 import { STable, Ellipsis } from '@/components'
-import { getUserList, addUser, updateUser, deleteUser } from '@/api/manage'
+import { getUserList, addUser, updateUser, deleteUser, getRoleList } from '@/api/manage'
 import CreateForm from './modules/CreateForm'
 
 const columns = [
@@ -183,7 +184,8 @@ export default {
           })
       },
       selectedRowKeys: [],
-      selectedRows: []
+      selectedRows: [],
+      roles: []
     }
   },
   created () {
@@ -198,10 +200,12 @@ export default {
   },
   methods: {
     handleAdd () {
+      this.handleRoleList()
       this.mdl = null
       this.visible = true
     },
     handleEdit (record) {
+      this.handleRoleList()
       this.visible = true
       this.mdl = { ...record }
     },
@@ -272,6 +276,14 @@ export default {
       this.queryParam = {
         date: moment(new Date())
       }
+    },
+    handleRoleList () {
+      const requestParameters = { 'pageSize': -1 }
+      getRoleList(requestParameters)
+      .then(res => {
+       this.roles = res.data.records
+       // console.log(this.roles)
+      })
     }
   }
 }

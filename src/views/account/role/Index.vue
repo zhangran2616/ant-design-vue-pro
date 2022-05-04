@@ -2,13 +2,13 @@
   <page-header-wrapper>
     <a-card :bordered="false">
       <div class="table-operator">
-        <a-button type="primary" icon="plus" @click="handleAdd">新建</a-button>
+        <a-button v-action:roleAdd type="primary" icon="plus" @click="handleAdd">新建</a-button>
       </div>
 
       <s-table
         ref="table"
         size="default"
-        rowKey="key"
+        rowKey="id"
         :columns="columns"
         :data="loadData"
         :alert="true"
@@ -27,9 +27,9 @@
 
         <span slot="action" slot-scope="text, record">
           <template>
-            <a @click="handleEdit(record)">修改</a>
+            <a v-action:roleUpdate @click="handleEdit(record)">修改</a>
             <a-divider type="vertical" />
-            <a @click="handlePermission(record)">权限</a>
+            <a v-action:roleAuthorization @click="handlePermission(record)">权限</a>
             <a-divider type="vertical" />
             <!--<a @click="handleDel(record)">删除</a> -->
           </template>
@@ -59,7 +59,7 @@
 
 <script>
 import { STable, Ellipsis } from '@/components'
-import { getRoleList, addRole, updateRole, deleteRole } from '@/api/manage'
+import { getRoleList, addRole, updateRole, deleteRole, roleAuthorization } from '@/api/manage'
 import CreateForm from './modules/CreateForm'
 import PermissionForm from './modules/PermissionForm'
 
@@ -208,8 +208,35 @@ export default {
       this.visiblePermission = false
     },
     handlePermissionOk (data, roleId) {
-      console.log(data, roleId)
+      // console.log(data, roleId)
       this.confirmPermissionLoading = true
+      const permissionIds = []
+      this.getAllNodeIds(permissionIds, data)
+      console.log('permissionIds:', permissionIds)
+      const parameters = {
+        roleId: roleId,
+        permissionIds: permissionIds
+      }
+      roleAuthorization(parameters)
+      .then(res => {
+        this.visiblePermission = false
+        this.confirmPermissionLoading = false
+        this.$refs.table.refresh()
+        this.$message.info('角色赋权成功')
+      })
+    },
+    getAllNodeIds (ids, dataList) {
+      if (dataList && dataList.length > 0) {
+        dataList.forEach(element => {
+          // console.log(element.name)
+          if (element.hasPermission) {
+            ids.push(element.id)
+          }
+          if (element.children && element.children.length > 0) {
+            this.getAllNodeIds(ids, element.children)
+          }
+        })
+      }
     }
   }
 }

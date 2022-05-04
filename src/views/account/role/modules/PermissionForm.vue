@@ -4,7 +4,7 @@
     :width="1100"
     :visible="visible"
     :confirmLoading="loading"
-    @ok="() => { $emit('ok', list, mode.id) }"
+    @ok="() => { $emit('ok', list, model.id) }"
     @cancel="() => { $emit('cancel') }"
   >
     <a-spin :spinning="loading" class="content">

@@ -67,7 +67,7 @@
       <s-table
         ref="table"
         size="default"
-        rowKey="key"
+        rowKey="id"
         :columns="columns"
         :data="loadData"
         :alert="true"
@@ -98,6 +98,7 @@
         :visible="visible"
         :loading="confirmLoading"
         :model="mdl"
+        :platforms="platforms"
         @cancel="handleCancel"
         @ok="handleOk"
       />
@@ -108,7 +109,7 @@
 <script>
 import moment from 'moment'
 import { STable, Ellipsis } from '@/components'
-import { querySubnet, addSubnet, updateSubnet, deleteSubnet } from '@/api/resource'
+import { querySubnet, addSubnet, updateSubnet, deleteSubnet, queryPlatform } from '@/api/resource'
 import CreateForm from './modules/CreateForm'
 
 const columns = [
@@ -183,7 +184,8 @@ export default {
           })
       },
       selectedRowKeys: [],
-      selectedRows: []
+      selectedRows: [],
+      platforms: []
     }
   },
   created () {
@@ -198,10 +200,12 @@ export default {
   },
   methods: {
     handleAdd () {
+      this.handlePlatformList()
       this.mdl = null
       this.visible = true
     },
     handleEdit (record) {
+      this.handlePlatformList()
       this.visible = true
       this.mdl = { ...record }
     },
@@ -272,6 +276,13 @@ export default {
       this.queryParam = {
         date: moment(new Date())
       }
+    },
+    handlePlatformList () {
+      const requestParameters = { 'pageSize': -1 }
+      queryPlatform(requestParameters)
+      .then(res => {
+       this.platforms = res.data.records
+      })
     }
   }
 }

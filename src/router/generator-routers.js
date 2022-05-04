@@ -131,7 +131,8 @@ export const generator = (routerMap, parent) => {
         icon: icon || undefined,
         hiddenHeaderContent: hiddenHeaderContent,
         target: target,
-        permission: item.name
+        permission: item.name,
+        actionList: item.meta.permission || []
       }
     }
     // 是否设置了隐藏菜单

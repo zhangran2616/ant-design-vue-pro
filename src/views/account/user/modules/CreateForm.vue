@@ -4,6 +4,7 @@
     :width="640"
     :visible="visible"
     :confirmLoading="loading"
+    :roles="roles"
     @ok="() => { $emit('ok') }"
     @cancel="() => { $emit('cancel') }"
   >
@@ -12,6 +13,11 @@
         <!-- 检查是否有 id 并且大于0，大于0是修改。其他是新增，新增不显示主键ID -->
         <a-form-item v-show="model && model.id > 0" label="主键ID">
           <a-input v-decorator="['id', { initialValue: 0 }]" disabled />
+        </a-form-item>
+        <a-form-item label="角色">
+          <a-select placeholder="请选择" v-decorator="['roleId', {rules: [{required: true, message: '请选择角色!'}]}]">
+            <a-select-option v-for="(item, index) in roles" :value="item.id" :key="index">{{ item.name }}</a-select-option>
+          </a-select>
         </a-form-item>
         <a-form-item label="姓名">
           <a-input v-decorator="['name', {rules: [{required: true, min: 1, max: 10, message: '请输入姓名长度1-10个字符！'}]}]" />
@@ -35,7 +41,7 @@
           <a-input v-decorator="['staffNumber', {rules: [{required: true, min: 1, max: 32, message: '请输入姓名长度1-32个字符！'}]}]" />
         </a-form-item>
         <a-form-item label="描述">
-          <a-input v-decorator="['description', {rules: [{required: true, min: 5, max: 200, message: '请输入描述长度5-200个字符！'}]}]" />
+          <a-input v-decorator="['description', {rules: [{required: true, min: 1, max: 200, message: '请输入描述长度1-200个字符！'}]}]" />
         </a-form-item>
       </a-form>
     </a-spin>
@@ -46,7 +52,7 @@
 import pick from 'lodash.pick'
 
 // 表单字段
-const fields = ['description', 'id', 'name', 'username', 'password', 'email', 'phone', 'tel', 'staffNumber']
+const fields = ['id', 'name', 'username', 'password', 'email', 'phone', 'tel', 'staffNumber', 'description', 'roleId']
 
 export default {
   props: {
@@ -61,6 +67,10 @@ export default {
     model: {
       type: Object,
       default: () => null
+    },
+    roles: {
+      type: Array,
+      default: () => []
     }
   },
   data () {

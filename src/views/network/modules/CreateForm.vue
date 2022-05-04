@@ -4,6 +4,7 @@
     :width="640"
     :visible="visible"
     :confirmLoading="loading"
+    :platforms="platforms"
     @ok="() => { $emit('ok') }"
     @cancel="() => { $emit('cancel') }"
   >
@@ -53,7 +54,6 @@
 
 <script>
 import pick from 'lodash.pick'
-import { queryPlatform } from '@/api/resource'
 
 // 表单字段
 const fields = ['name', 'id', 'name', 'ip_pool', 'getway', 'mask', 'dns2', 'dns1', 'cpfId', 'datacenter', 'networkLabel']
@@ -71,6 +71,10 @@ export default {
     model: {
       type: Object,
       default: () => null
+    },
+    platforms: {
+      type: Array,
+      default: () => []
     }
   },
   data () {
@@ -86,24 +90,13 @@ export default {
     }
     return {
       form: this.$form.createForm(this),
-      platforms: [],
       datacenters: [],
       networkLabels: []
     }
   },
-  methods: {
-      queryPlatform () {
-        const requestParameters = { 'pageSize': -1 }
-        queryPlatform(requestParameters)
-          .then(res => {
-            this.platforms = res.data.records
-          })
-      }
-  },
+
   created () {
     console.log('custom modal created')
-
-    this.queryPlatform()
 
     // 防止表单未注册
     fields.forEach(v => this.form.getFieldDecorator(v))
