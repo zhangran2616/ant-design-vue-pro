@@ -31,7 +31,7 @@
             <a-divider type="vertical" />
             <a v-action:roleAuthorization @click="handlePermission(record)">权限</a>
             <a-divider type="vertical" />
-            <!--<a @click="handleDel(record)">删除</a> -->
+            <a v-action:roleDelete @click="handleDel(record)">删除</a>
           </template>
         </span>
       </s-table>
@@ -62,6 +62,7 @@ import { STable, Ellipsis } from '@/components'
 import { getRoleList, addRole, updateRole, deleteRole, roleAuthorization } from '@/api/manage'
 import CreateForm from './modules/CreateForm'
 import PermissionForm from './modules/PermissionForm'
+import { Modal } from 'ant-design-vue'
 
 const columns = [
   {
@@ -78,7 +79,7 @@ const columns = [
   },
   {
     title: '修改时间',
-    dataIndex: 'updateTime'
+    dataIndex: 'createTime'
   },
   {
     title: '操作',
@@ -149,32 +150,37 @@ export default {
       this.confirmLoading = true
       form.validateFields((errors, values) => {
         if (!errors) {
-          console.log('values', values)
           if (values.id > 0) {
             // 修改 e.g.
-            updateRole(values)
-            .then(res => {
-              this.visible = false
-              this.confirmLoading = false
-              // 重置表单数据
-              form.resetFields()
-              // 刷新表格
-              this.$refs.table.refresh()
-
-              this.$message.info('修改成功')
+            updateRole(values).then(res => {
+              if (res.code !== 0) {
+                this.$message.error(res.message)
+              } else {
+                this.$message.success('修改成功')
+              }
+            }).finally(() => {
+                this.visible = false
+                this.confirmLoading = false
+                // 重置表单数据
+                form.resetFields()
+                // 刷新表格
+                this.$refs.table.refresh()
             })
           } else {
             // 新增
-            addRole(values)
-            .then(res => {
-              this.visible = false
-              this.confirmLoading = false
-              // 重置表单数据
-              form.resetFields()
-              // 刷新表格
-              this.$refs.table.refresh()
-
-              this.$message.info('新增成功')
+            addRole(values).then(res => {
+              if (res.code !== 0) {
+                this.$message.error(res.message)
+              } else {
+                this.$message.success('新增成功')
+              }
+            }).finally(() => {
+                this.visible = false
+                this.confirmLoading = false
+                // 重置表单数据
+                form.resetFields()
+                // 刷新表格
+                this.$refs.table.refresh()
             })
           }
         } else {
@@ -189,15 +195,25 @@ export default {
       form.resetFields() // 清理表单数据（可不做）
     },
     handleDel (record) {
-      const params = {
-        id: record.id
-      }
-      deleteRole(params)
-      .then(res => {
-        // 刷新表格
-        this.$refs.table.refresh()
-
-        this.$message.info('删除成功')
+      Modal.confirm({
+        title: this.$t('layouts.delete.dialog.title'),
+        content: this.$t('layouts.delete.dialog.content'),
+        onOk: () => {
+          const params = {
+            id: record.id
+          }
+          deleteRole(params).then(res => {
+            if (res.code !== 0) {
+                this.$message.error(res.message)
+            } else {
+              this.$message.success('删除成功')
+            }
+          }).finally(() => {
+            // 刷新表格
+            this.$refs.table.refresh()
+          })
+        },
+        onCancel () {}
       })
     },
     onSelectChange (selectedRowKeys, selectedRows) {
@@ -219,10 +235,11 @@ export default {
       }
       roleAuthorization(parameters)
       .then(res => {
+        this.$refs.table.refresh()
+        this.$message.success('角色赋权成功')
+      }).finally(() => {
         this.visiblePermission = false
         this.confirmPermissionLoading = false
-        this.$refs.table.refresh()
-        this.$message.info('角色赋权成功')
       })
     },
     getAllNodeIds (ids, dataList) {

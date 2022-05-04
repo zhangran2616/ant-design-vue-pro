@@ -1,6 +1,6 @@
 <template>
   <a-modal
-    title="新建用户"
+    :title=" model && model.id > 0? '编辑用户' : '新建用户' "
     :width="640"
     :visible="visible"
     :confirmLoading="loading"
@@ -15,7 +15,7 @@
           <a-input v-decorator="['id', { initialValue: 0 }]" disabled />
         </a-form-item>
         <a-form-item label="角色">
-          <a-select placeholder="请选择" v-decorator="['roleId', {rules: [{required: true, message: '请选择角色!'}]}]">
+          <a-select :disabled=" model && model.id > 0 " placeholder="请选择" v-decorator="['roleId', {rules: [{required: true, message: '请选择角色!'}]}]">
             <a-select-option v-for="(item, index) in roles" :value="item.id" :key="index">{{ item.name }}</a-select-option>
           </a-select>
         </a-form-item>
@@ -23,13 +23,13 @@
           <a-input v-decorator="['name', {rules: [{required: true, min: 1, max: 10, message: '请输入姓名长度1-10个字符！'}]}]" />
         </a-form-item>
         <a-form-item label="用户名">
-          <a-input v-decorator="['username', {rules: [{required: true, min: 1,max: 30, message: '请输入用户名长度1-30个字符！'}]}]" />
+          <a-input :disabled=" model && model.id > 0 " v-decorator="['username', {rules: [{required: true, min: 1,max: 100, message: '请输入用户名长度1-100个字符！'}]}]" />
         </a-form-item>
-        <a-form-item label="密码">
-          <a-input v-decorator="['password', {rules: [{required: true, min: 1,max: 60, message: '请输入密码长度1-60个字符！'}]}]" />
+        <a-form-item v-show="!model" label="密码">
+          <a-input type="password" v-decorator="['password', {rules: [{required: true, min: 1,max: 100, message: '请输入密码长度1-100个字符！'}]}]" />
         </a-form-item>
         <a-form-item label="Email">
-          <a-input v-decorator="['email', {rules: [{required: true, min: 1, max: 60, message: '请输入Email长度1-60个字符！'}]}]" />
+          <a-input v-decorator="['email', {rules: [{required: true, min: 1, max: 200, message: '请输入Email长度1-200个字符！'}]}]" />
         </a-form-item>
         <a-form-item label="手机">
           <a-input v-decorator="['phone', {rules: [{required: true, min: 1,max: 20, message: '请输入手机长度1-20个字符！'}]}]" />
@@ -38,7 +38,7 @@
           <a-input v-decorator="['tel', {rules: [{required: true, min: 1,max: 15, message: '请输入电话长度1-15个字符！'}]}]" />
         </a-form-item>
         <a-form-item label="员工编号">
-          <a-input v-decorator="['staffNumber', {rules: [{required: true, min: 1, max: 32, message: '请输入姓名长度1-32个字符！'}]}]" />
+          <a-input v-decorator="['staffNumber', {rules: [{required: true, min: 1, max: 50, message: '请输入姓名长度1-50个字符！'}]}]" />
         </a-form-item>
         <a-form-item label="描述">
           <a-input v-decorator="['description', {rules: [{required: true, min: 1, max: 200, message: '请输入描述长度1-200个字符！'}]}]" />

@@ -27,8 +27,8 @@
               </a-form-item>
             </a-col>
             <a-col :md="6" :sm="24">
-              <a-form-item label="用户名">
-                <a-input v-model="queryParam.username" placeholder=""/>
+              <a-form-item label="操作者">
+                <a-input v-model="queryParam.username" placeholder="用户名"/>
               </a-form-item>
             </a-col>
             <a-col :md="7" :sm="24">

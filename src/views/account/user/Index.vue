@@ -4,26 +4,26 @@
       <div class="table-page-search-wrapper">
         <a-form layout="inline">
           <a-row :gutter="48">
-            <a-col :md="8" :sm="24">
+            <a-col :md="6" :sm="24">
               <a-form-item label="用户名">
                 <a-input v-model="queryParam.username" placeholder=""/>
               </a-form-item>
             </a-col>
-            <a-col :md="8" :sm="24">
+            <a-col :md="6" :sm="24">
+              <a-form-item label="邮箱">
+                <a-input v-model="queryParam.email" style="width: 100%"/>
+              </a-form-item>
+            </a-col>
+            <a-col :md="4" :sm="24">
               <a-form-item label="账号状态">
                 <a-select v-model="queryParam.status" placeholder="请选择" default-value="0">
                   <a-select-option value="">全部</a-select-option>
-                  <a-select-option value="0">正常</a-select-option>
-                  <a-select-option value="1">锁定</a-select-option>
+                  <a-select-option value="0">启用</a-select-option>
+                  <a-select-option value="1">禁用</a-select-option>
                 </a-select>
               </a-form-item>
             </a-col>
             <template v-if="advanced">
-              <a-col :md="8" :sm="24">
-                <a-form-item label="邮箱">
-                  <a-input-number v-model="queryParam.email" style="width: 100%"/>
-                </a-form-item>
-              </a-col>
               <a-col :md="8" :sm="24">
                 <a-form-item
                   label="登录时间段"
@@ -111,6 +111,7 @@ import moment from 'moment'
 import { STable, Ellipsis } from '@/components'
 import { getUserList, addUser, updateUser, deleteUser, getRoleList } from '@/api/manage'
 import CreateForm from './modules/CreateForm'
+import { Modal } from 'ant-design-vue'
 
 const columns = [
   {
@@ -124,6 +125,10 @@ const columns = [
   {
     title: '用户名',
     dataIndex: 'username'
+  },
+  {
+    title: '角色',
+    dataIndex: 'roleName'
   },
   {
     title: '状态',
@@ -141,11 +146,7 @@ const columns = [
     dataIndex: 'email'
   },
   {
-    title: '电话',
-    dataIndex: 'phone'
-  },
-  {
-    title: '最新登录时间',
+    title: '最后登录时间',
     dataIndex: 'lastLoginTime'
   },
   {
@@ -214,32 +215,38 @@ export default {
       this.confirmLoading = true
       form.validateFields((errors, values) => {
         if (!errors) {
-          console.log('values', values)
+          // console.log('values', values)
           if (values.id > 0) {
             // 修改 e.g.
-            updateUser(values)
-            .then(res => {
+            updateUser(values).then(res => {
+              if (res.code !== 0) {
+                this.$message.error(res.message)
+              } else {
+                this.$message.success('修改成功')
+              }
+            }).finally(() => {
               this.visible = false
               this.confirmLoading = false
               // 重置表单数据
               form.resetFields()
               // 刷新表格
               this.$refs.table.refresh()
-
-              this.$message.info('修改成功')
             })
           } else {
             // 新增
-            addUser(values)
-            .then(res => {
+            addUser(values).then(res => {
+              if (res.code !== 0) {
+                this.$message.error(res.message)
+              } else {
+                this.$message.success('新增成功')
+              }
+            }).finally(() => {
               this.visible = false
               this.confirmLoading = false
               // 重置表单数据
               form.resetFields()
               // 刷新表格
               this.$refs.table.refresh()
-
-              this.$message.info('新增成功')
             })
           }
         } else {
@@ -254,15 +261,26 @@ export default {
       form.resetFields() // 清理表单数据（可不做）
     },
     handleDel (record) {
-      const params = {
-        id: record.id
-      }
-      deleteUser(params)
-      .then(res => {
-        // 刷新表格
-        this.$refs.table.refresh()
-
-        this.$message.info('删除成功')
+      Modal.confirm({
+        title: this.$t('layouts.delete.dialog.title'),
+        content: this.$t('layouts.delete.dialog.content'),
+        onOk: () => {
+          const params = {
+            id: record.id
+          }
+          deleteUser(params)
+          .then(res => {
+            if (res.code !== 0) {
+                this.$message.error(res.message)
+            } else {
+              this.$message.success('删除成功')
+            }
+          }).finally(() => {
+            // 刷新表格
+            this.$refs.table.refresh()
+          })
+        },
+        onCancel () {}
       })
     },
     onSelectChange (selectedRowKeys, selectedRows) {

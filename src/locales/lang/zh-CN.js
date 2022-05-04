@@ -21,6 +21,8 @@ export default {
 
   'layouts.usermenu.dialog.title': '信息',
   'layouts.usermenu.dialog.content': '您确定要注销吗？',
+  'layouts.delete.dialog.title': '警告',
+  'layouts.delete.dialog.content': '您确定要删除吗？',
   'layouts.userLayout.title': '上海拓云科技信息有限责任公司',
   ...components,
   ...global,
