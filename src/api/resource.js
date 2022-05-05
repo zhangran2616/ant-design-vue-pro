@@ -5,7 +5,13 @@ const api = {
   addSubnet: '/cmp/network/addSubnet',
   updateSubnet: '/cmp/network/updateSubnet',
   deleteSubnet: '/cmp/network/deleteSubnet',
-  queryPlatform: '/cmp/platform/queryPlatform'
+  queryPlatform: '/cmp/platform/queryPlatform',
+  addPlatform: '/cmp/platform/addPlatform',
+  updatePlatform: '/cmp/platform/updatePlatform',
+  deletePlatform: '/cmp/platform/deletePlatform',
+  queryCluster: '/cmp/platform/queryCluster',
+  queryHost: '/cmp/platform/queryHost',
+  queryStore: '/cmp/platform/queryStore'
 }
 
 export default api
@@ -45,6 +51,54 @@ export function deleteSubnet (parameter) {
 export function queryPlatform (parameter) {
   return request({
     url: api.queryPlatform,
+    method: 'get',
+    params: parameter
+  })
+}
+
+export function addPlatform (parameter) {
+  return request({
+    url: api.addPlatform,
+    method: 'post',
+    data: parameter
+  })
+}
+
+export function updatePlatform (parameter) {
+  return request({
+    url: api.updatePlatform,
+    method: 'post',
+    data: parameter
+  })
+}
+
+export function deletePlatform (parameter) {
+  return request({
+    url: api.deletePlatform,
+    method: 'get',
+    params: parameter
+  })
+}
+
+export function queryCluster (parameter) {
+  return request({
+    url: api.queryCluster,
+    method: 'get',
+    params: parameter
+  })
+}
+
+export function queryHost (parameter) {
+  return request({
+    url: api.queryHost,
+    method: 'get',
+    params: parameter
+  })
+}
+
+export function queryStore (parameter) {
+  return request({
+    url: api.queryStore,
     method: 'get',
     params: parameter
   })

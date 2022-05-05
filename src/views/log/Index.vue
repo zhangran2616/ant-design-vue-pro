@@ -17,7 +17,7 @@
             </a-col>
             <a-col :md="4" :sm="24">
               <a-form-item label="操作类型">
-                <a-select v-model="queryParam.type" placeholder="请选择" default-value="0">
+                <a-select v-model="queryParam.type" placeholder="请选择" default-value="">
                   <a-select-option value="">全部</a-select-option>
                   <a-select-option value="新增">新增</a-select-option>
                   <a-select-option value="修改">修改</a-select-option>

@@ -2,7 +2,7 @@
   <page-header-wrapper>
     <a-card :bordered="false">
       <div class="table-operator">
-        <a-button v-action:roleAdd type="primary" icon="plus" @click="handleAdd">新建</a-button>
+        <a-button v-action:plateformAdd type="primary" icon="plus" @click="handleAdd">新建</a-button>
       </div>
 
       <s-table
@@ -27,11 +27,11 @@
 
         <span slot="action" slot-scope="text, record">
           <template>
-            <a v-action:roleUpdate @click="handleEdit(record)">修改</a>
+            <a v-action:plateformUpdate @click="handleEdit(record)">修改</a>
             <a-divider type="vertical" />
-            <a v-action:roleAuthorization @click="handlePermission(record)">权限</a>
+            <a v-action:plateformSync @click="handlePermission(record)">同步</a>
             <a-divider type="vertical" />
-            <a v-action:roleDelete @click="handleDel(record)">删除</a>
+            <a v-action:plateformDelete @click="handleDel(record)">删除</a>
           </template>
         </span>
       </s-table>
@@ -44,24 +44,14 @@
         @cancel="handleCancel"
         @ok="handleOk"
       />
-
-      <permission-form
-        ref="permissionModal"
-        :visible="visiblePermission"
-        :loading="confirmPermissionLoading"
-        :model="mdlPermission"
-        @cancel="handlePermissionCancel"
-        @ok="handlePermissionOk"
-      />
     </a-card>
   </page-header-wrapper>
 </template>
 
 <script>
 import { STable, Ellipsis } from '@/components'
-import { getRoleList, addRole, updateRole, deleteRole, roleAuthorization } from '@/api/manage'
+import { queryPlatform, addPlatform, updatePlatform, deletePlatform } from '@/api/resource'
 import CreateForm from './modules/CreateForm'
-import PermissionForm from './modules/PermissionForm'
 import { Modal } from 'ant-design-vue'
 
 const columns = [
@@ -70,12 +60,28 @@ const columns = [
     scopedSlots: { customRender: 'serial' }
   },
   {
-    title: '角色名',
+    title: '名称',
     dataIndex: 'name'
   },
   {
-    title: '描述',
-    dataIndex: 'description'
+    title: '类型',
+    dataIndex: 'type'
+  },
+  {
+    title: 'IP',
+    dataIndex: 'ip'
+  },
+  {
+    title: '连接状态',
+    dataIndex: 'connect'
+  },
+  {
+    title: '云实例',
+    dataIndex: 'vmCount'
+  },
+  {
+    title: '模板',
+    dataIndex: 'templateCount'
   },
   {
     title: '修改时间',
@@ -94,8 +100,7 @@ export default {
   components: {
     STable,
     Ellipsis,
-    CreateForm,
-    PermissionForm
+    CreateForm
   },
   data () {
     this.columns = columns
@@ -103,8 +108,6 @@ export default {
       // create model
       visible: false,
       confirmLoading: false,
-      visiblePermission: false,
-      confirmPermissionLoading: false,
       mdl: null,
       mdlPermission: null,
       // 查询参数
@@ -113,7 +116,7 @@ export default {
       loadData: parameter => {
         const requestParameters = Object.assign({}, parameter, this.queryParam)
         console.log('loadData request parameters:', requestParameters)
-        return getRoleList(requestParameters)
+        return queryPlatform(requestParameters)
           .then(res => {
             return res.data
           })
@@ -141,10 +144,6 @@ export default {
       this.visible = true
       this.mdl = { ...record }
     },
-    handlePermission (record) {
-      this.visiblePermission = true
-      this.mdlPermission = { ...record }
-    },
     handleOk () {
       const form = this.$refs.createModal.form
       this.confirmLoading = true
@@ -152,7 +151,7 @@ export default {
         if (!errors) {
           if (values.id > 0) {
             // 修改 e.g.
-            updateRole(values).then(res => {
+            updatePlatform(values).then(res => {
               if (res.code !== 0) {
                 this.$message.error(res.message)
               } else {
@@ -168,7 +167,7 @@ export default {
             })
           } else {
             // 新增
-            addRole(values).then(res => {
+            addPlatform(values).then(res => {
               if (res.code !== 0) {
                 this.$message.error(res.message)
               } else {
@@ -202,7 +201,7 @@ export default {
           const params = {
             id: record.id
           }
-          deleteRole(params).then(res => {
+          deletePlatform(params).then(res => {
             if (res.code !== 0) {
                 this.$message.error(res.message)
             } else {
@@ -222,38 +221,6 @@ export default {
     },
     handlePermissionCancel () {
       this.visiblePermission = false
-    },
-    handlePermissionOk (data, roleId) {
-      // console.log(data, roleId)
-      this.confirmPermissionLoading = true
-      const permissionIds = []
-      this.getAllNodeIds(permissionIds, data)
-      console.log('permissionIds:', permissionIds)
-      const parameters = {
-        roleId: roleId,
-        permissionIds: permissionIds
-      }
-      roleAuthorization(parameters)
-      .then(res => {
-        this.$refs.table.refresh()
-        this.$message.success('角色赋权成功')
-      }).finally(() => {
-        this.visiblePermission = false
-        this.confirmPermissionLoading = false
-      })
-    },
-    getAllNodeIds (ids, dataList) {
-      if (dataList && dataList.length > 0) {
-        dataList.forEach(element => {
-          // console.log(element.name)
-          if (element.hasPermission) {
-            ids.push(element.id)
-          }
-          if (element.children && element.children.length > 0) {
-            this.getAllNodeIds(ids, element.children)
-          }
-        })
-      }
     }
   }
 }

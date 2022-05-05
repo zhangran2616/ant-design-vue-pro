@@ -1,6 +1,6 @@
 <template>
   <a-modal
-    :title=" model && model.id > 0? '编辑角色' : '新建角色' "
+    :title=" model && model.id > 0? '编辑平台' : '新建平台' "
     :width="640"
     :visible="visible"
     :confirmLoading="loading"
@@ -13,11 +13,24 @@
         <a-form-item v-show="model && model.id > 0" label="主键ID">
           <a-input v-decorator="['id', { initialValue: 0 }]" disabled />
         </a-form-item>
-        <a-form-item label="名称">
-          <a-input v-decorator="['name', {rules: [{required: true, min: 1, max: 10, message: '请输入名称长度1-10个字符！'}]}]" />
+        <a-form-item label="类型">
+          <a-select :disabled=" model && model.id > 0 " placeholder="请选择" v-decorator="['type', {rules: [{required: true, message: '请选择平台类型!'}]},{initialValue:'vmware'}]">
+            <a-select-option value="vmware">VMware vCenter</a-select-option>
+            <a-select-option value="openstack">OpenStack</a-select-option>
+            <a-select-option value="aliyun">AliYun</a-select-option>
+          </a-select>
         </a-form-item>
-        <a-form-item label="描述">
-          <a-input v-decorator="['description', {rules: [{required: true, min: 1, max: 100, message: '请输入描述长度1-100个字符！'}]}]" />
+        <a-form-item label="名称">
+          <a-input v-decorator="['name', {rules: [{required: true, min: 1, max: 50, message: '请输入名称长度1-50个字符！'}]}]" />
+        </a-form-item>
+        <a-form-item label="IP">
+          <a-input v-decorator="['ip', {rules: [{required: true, min: 1, max: 500, message: '请输入IP长度1-500个字符！'}]}]" />
+        </a-form-item>
+        <a-form-item label="用户名">
+          <a-input v-decorator="['username', {rules: [{required: true, min: 1, max: 500, message: '请输入用户名长度1-500个字符！'}]}]" />
+        </a-form-item>
+        <a-form-item label="密码">
+          <a-input type="password" v-decorator="['password', {rules: [{required: true, min: 1, max: 500, message: '请输入密码长度1-500个字符！'}]}]" />
         </a-form-item>
       </a-form>
     </a-spin>
@@ -28,7 +41,7 @@
 import pick from 'lodash.pick'
 
 // 表单字段
-const fields = ['description', 'id', 'name']
+const fields = ['id', 'name', 'ip', 'username', 'password', 'type']
 
 export default {
   props: {
