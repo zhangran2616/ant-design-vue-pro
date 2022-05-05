@@ -75,15 +75,19 @@ const columns = [
   },
   {
     title: '已用容量',
-    dataIndex: 'freeSpace'
+    customRender: (text, record, index) => {
+      return record.capacity - record.freeSpace
+    }
   },
   {
     title: '可用容量',
-    dataIndex: 'freeSpace2'
+    dataIndex: 'freeSpace'
   },
   {
     title: '可用率',
-    dataIndex: 'freeSpace3'
+    customRender: (text, record, index) => {
+      return (record.freeSpace / record.capacity * 100).toFixed(2) + '%'
+    }
   },
   {
     title: '关联主机',
