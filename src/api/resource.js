@@ -11,7 +11,8 @@ const api = {
   deletePlatform: '/cmp/platform/deletePlatform',
   queryCluster: '/cmp/platform/queryCluster',
   queryHost: '/cmp/platform/queryHost',
-  queryStore: '/cmp/platform/queryStore'
+  queryStore: '/cmp/platform/queryStore',
+  queryVirtualMachine: '/cmp/vm/queryVirtualMachine'
 }
 
 export default api
@@ -99,6 +100,14 @@ export function queryHost (parameter) {
 export function queryStore (parameter) {
   return request({
     url: api.queryStore,
+    method: 'get',
+    params: parameter
+  })
+}
+
+export function queryVirtualMachine (parameter) {
+  return request({
+    url: api.queryVirtualMachine,
     method: 'get',
     params: parameter
   })

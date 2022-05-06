@@ -74,9 +74,9 @@ const columns = [
     dataIndex: 'capacity',
     customRender: (text, record, index) => {
       if (text < 1099511627776) {
-        return (text / 1024 / 1024 / 1024).toFixed(2) + 'GB'
+        return (text / 1024 / 1024 / 1024).toFixed(2).replace(/[.]?0+$/, '') + 'GB'
       } else {
-        return (text / 1024 / 1024 / 1024 / 1024).toFixed(2) + 'TB'
+        return (text / 1024 / 1024 / 1024 / 1024).toFixed(2).replace(/[.]?0+$/, '') + 'TB'
       }
     }
   },
@@ -85,9 +85,9 @@ const columns = [
     customRender: (text, record, index) => {
       const used = record.capacity - record.freeSpace
       if (used < 1099511627776) {
-        return (used / 1024 / 1024 / 1024).toFixed(2) + 'GB'
+        return (used / 1024 / 1024 / 1024).toFixed(2).replace(/[.]?0+$/, '') + 'GB'
       } else {
-        return (used / 1024 / 1024 / 1024 / 1024).toFixed(2) + 'TB'
+        return (used / 1024 / 1024 / 1024 / 1024).toFixed(2).replace(/[.]?0+$/, '') + 'TB'
       }
     }
   },
@@ -96,16 +96,16 @@ const columns = [
     dataIndex: 'freeSpace',
     customRender: (text, record, index) => {
       if (text < 1099511627776) {
-        return (text / 1024 / 1024 / 1024).toFixed(2) + 'GB'
+        return (text / 1024 / 1024 / 1024).toFixed(2).replace(/[.]?0+$/, '') + 'GB'
       } else {
-        return (text / 1024 / 1024 / 1024 / 1024).toFixed(2) + 'TB'
+        return (text / 1024 / 1024 / 1024 / 1024).toFixed(2).replace(/[.]?0+$/, '') + 'TB'
       }
     }
   },
   {
     title: '可用率',
     customRender: (text, record, index) => {
-      return (record.freeSpace / record.capacity * 100).toFixed(2) + '%'
+      return (record.freeSpace / record.capacity * 100).toFixed(2).replace(/[.]?0+$/, '') + '%'
     }
   },
   {

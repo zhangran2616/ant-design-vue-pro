@@ -71,16 +71,19 @@ const columns = [
   },
   {
     title: 'CPU',
-    dataIndex: 'cpu'
+    dataIndex: 'cpu',
+    customRender: (text, record, index) => {
+      return (text / 1000 / 1000 / 1000).toFixed(2).replace(/[.]?0+$/, '') + 'GHz'
+    }
   },
   {
     title: '内存',
     dataIndex: 'memory',
     customRender: (text, record, index) => {
       if (text < 1099511627776) {
-        return (text / 1024 / 1024 / 1024).toFixed(2) + 'GB'
+        return (text / 1024 / 1024 / 1024).toFixed(2).replace(/[.]?0+$/, '') + 'GB'
       } else {
-        return (text / 1024 / 1024 / 1024 / 1024).toFixed(2) + 'TB'
+        return (text / 1024 / 1024 / 1024 / 1024).toFixed(2).replace(/[.]?0+$/, '') + 'TB'
       }
     }
   },
@@ -89,9 +92,9 @@ const columns = [
     dataIndex: 'store',
     customRender: (text, record, index) => {
       if (text < 1099511627776) {
-        return (text / 1024 / 1024 / 1024).toFixed(2) + 'GB'
+        return (text / 1024 / 1024 / 1024).toFixed(2).replace(/[.]?0+$/, '') + 'GB'
       } else {
-        return (text / 1024 / 1024 / 1024 / 1024).toFixed(2) + 'TB'
+        return (text / 1024 / 1024 / 1024 / 1024).toFixed(2).replace(/[.]?0+$/, '') + 'TB'
       }
     }
   },
