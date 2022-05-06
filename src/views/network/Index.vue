@@ -5,45 +5,14 @@
         <a-form layout="inline">
           <a-row :gutter="48">
             <a-col :md="8" :sm="24">
-              <a-form-item label="用户名">
-                <a-input v-model="queryParam.username" placeholder=""/>
+              <a-form-item label="关键字">
+                <a-input v-model="queryParam.keyword" placeholder=""/>
               </a-form-item>
             </a-col>
-            <a-col :md="8" :sm="24">
-              <a-form-item label="账号状态">
-                <a-select v-model="queryParam.status" placeholder="请选择" default-value="0">
-                  <a-select-option value="">全部</a-select-option>
-                  <a-select-option value="0">正常</a-select-option>
-                  <a-select-option value="1">锁定</a-select-option>
-                </a-select>
-              </a-form-item>
-            </a-col>
-            <template v-if="advanced">
-              <a-col :md="8" :sm="24">
-                <a-form-item label="邮箱">
-                  <a-input-number v-model="queryParam.email" style="width: 100%"/>
-                </a-form-item>
-              </a-col>
-              <a-col :md="8" :sm="24">
-                <a-form-item
-                  label="登录时间段"
-                  :labelCol="{lg: {span: 7}, sm: {span: 7}}"
-                  :wrapperCol="{lg: {span: 10}, sm: {span: 17} }">
-                  <a-range-picker
-                    name="buildTime"
-                    style="width: 100%"
-                  />
-                </a-form-item>
-              </a-col>
-            </template>
             <a-col :md="!advanced && 8 || 24" :sm="24">
               <span class="table-page-search-submitButtons" :style="advanced && { float: 'right', overflow: 'hidden' } || {} ">
                 <a-button type="primary" @click="$refs.table.refresh(true)">查询</a-button>
                 <a-button style="margin-left: 8px" @click="() => this.queryParam = {}">重置</a-button>
-                <a @click="toggleAdvanced" style="margin-left: 8px">
-                  {{ advanced ? '收起' : '展开' }}
-                  <a-icon :type="advanced ? 'up' : 'down'"/>
-                </a>
               </span>
             </a-col>
           </a-row>
@@ -51,17 +20,7 @@
       </div>
 
       <div class="table-operator">
-        <a-button type="primary" icon="plus" @click="handleAdd">新建</a-button>
-        <a-dropdown v-action:edit v-if="selectedRowKeys.length > 0">
-          <a-menu slot="overlay">
-            <a-menu-item key="1"><a-icon type="delete" />删除</a-menu-item>
-            <!-- lock | unlock -->
-            <a-menu-item key="2"><a-icon type="lock" />锁定</a-menu-item>
-          </a-menu>
-          <a-button style="margin-left: 8px">
-            批量操作 <a-icon type="down" />
-          </a-button>
-        </a-dropdown>
+        <a-button v-action:subnetAdd type="primary" icon="plus" @click="handleAdd">新建</a-button>
       </div>
 
       <s-table
@@ -78,17 +37,13 @@
           {{ index + 1 }}
         </span>
         <span slot="status" slot-scope="text">
-          <a-badge :status="text | statusTypeFilter" :text="text | statusFilter" />
+          <a-tag :color=" text === 0 ? 'green' : 'volcano' ">{{ text === 0 ? '启用':'禁用' }}</a-tag>
         </span>
-        <span slot="description" slot-scope="text">
-          <ellipsis :length="4" tooltip>{{ text }}</ellipsis>
-        </span>
-
         <span slot="action" slot-scope="text, record">
           <template>
-            <a @click="handleEdit(record)">修改</a>
+            <a v-action:subnetUpdate @click="handleEdit(record)">修改</a>
             <a-divider type="vertical" />
-            <a @click="handleDel(record)">删除</a>
+            <a v-action:subnetDelete @click="handleDel(record)">删除</a>
           </template>
         </span>
       </s-table>
@@ -111,6 +66,7 @@ import moment from 'moment'
 import { STable, Ellipsis } from '@/components'
 import { querySubnet, addSubnet, updateSubnet, deleteSubnet, queryPlatform } from '@/api/resource'
 import CreateForm from './modules/CreateForm'
+import { Modal } from 'ant-design-vue'
 
 const columns = [
   {
@@ -118,35 +74,47 @@ const columns = [
     scopedSlots: { customRender: 'serial' }
   },
   {
-    title: '姓名',
+    title: '名称',
     dataIndex: 'name'
   },
   {
-    title: '用户名',
-    dataIndex: 'username'
+    title: '云平台',
+    dataIndex: 'cpfName'
+  },
+  {
+    title: 'IP地址池',
+    dataIndex: 'ipPool'
   },
   {
     title: '状态',
     dataIndex: 'status',
+    scopedSlots: { customRender: 'status' }
+  },
+  {
+    title: '掩码',
+    dataIndex: 'mask'
+  },
+  {
+    title: '网关',
+    dataIndex: 'gateway'
+  },
+  {
+    title: 'DNS',
     customRender: (h, scope) => {
-      if (h === 0) {
-        return '启用'
-      } else {
-        return '禁用'
+      let d1 = ''
+      let d2 = ''
+      if (h.dns1) {
+        d1 = h.dns1
       }
+      if (h.dns2) {
+        d2 = h.dns2
+      }
+      return d1 + ' ' + d2
     }
   },
   {
-    title: '邮箱',
-    dataIndex: 'email'
-  },
-  {
-    title: '电话',
-    dataIndex: 'phone'
-  },
-  {
-    title: '最新登录时间',
-    dataIndex: 'lastLoginTime'
+    title: '可用IP',
+    dataIndex: 'ipCount'
   },
   {
     title: '操作',
@@ -214,32 +182,37 @@ export default {
       this.confirmLoading = true
       form.validateFields((errors, values) => {
         if (!errors) {
-          console.log('values', values)
           if (values.id > 0) {
             // 修改 e.g.
-            updateSubnet(values)
-            .then(res => {
-              this.visible = false
-              this.confirmLoading = false
-              // 重置表单数据
-              form.resetFields()
-              // 刷新表格
-              this.$refs.table.refresh()
-
-              this.$message.info('修改成功')
+            updateSubnet(values).then(res => {
+              if (res.code !== 0) {
+                this.$message.error(res.message)
+              } else {
+                this.$message.success('修改成功')
+              }
+            }).finally(() => {
+                this.visible = false
+                this.confirmLoading = false
+                // 重置表单数据
+                form.resetFields()
+                // 刷新表格
+                this.$refs.table.refresh()
             })
           } else {
             // 新增
-            addSubnet(values)
-            .then(res => {
-              this.visible = false
-              this.confirmLoading = false
-              // 重置表单数据
-              form.resetFields()
-              // 刷新表格
-              this.$refs.table.refresh()
-
-              this.$message.info('新增成功')
+            addSubnet(values).then(res => {
+              if (res.code !== 0) {
+                this.$message.error(res.message)
+              } else {
+                this.$message.success('新增成功')
+              }
+            }).finally(() => {
+                this.visible = false
+                this.confirmLoading = false
+                // 重置表单数据
+                form.resetFields()
+                // 刷新表格
+                this.$refs.table.refresh()
             })
           }
         } else {
@@ -254,15 +227,25 @@ export default {
       form.resetFields() // 清理表单数据（可不做）
     },
     handleDel (record) {
-      const params = {
-        id: record.id
-      }
-      deleteSubnet(params)
-      .then(res => {
-        // 刷新表格
-        this.$refs.table.refresh()
-
-        this.$message.info('删除成功')
+      Modal.confirm({
+        title: this.$t('layouts.delete.dialog.title'),
+        content: this.$t('layouts.delete.dialog.content'),
+        onOk: () => {
+          const params = {
+            id: record.id
+          }
+          deleteSubnet(params).then(res => {
+            if (res.code !== 0) {
+                this.$message.error(res.message)
+            } else {
+              this.$message.success('删除成功')
+            }
+          }).finally(() => {
+            // 刷新表格
+            this.$refs.table.refresh()
+          })
+        },
+        onCancel () {}
       })
     },
     onSelectChange (selectedRowKeys, selectedRows) {

@@ -12,7 +12,9 @@ const api = {
   queryCluster: '/cmp/platform/queryCluster',
   queryHost: '/cmp/platform/queryHost',
   queryStore: '/cmp/platform/queryStore',
-  queryVirtualMachine: '/cmp/vm/queryVirtualMachine'
+  queryVirtualMachine: '/cmp/vm/queryVirtualMachine',
+  queryDc: '/cmp/platform/queryDc',
+  queryNetworkLabel: '/cmp/platform/queryNetworkLabel'
 }
 
 export default api
@@ -108,6 +110,22 @@ export function queryStore (parameter) {
 export function queryVirtualMachine (parameter) {
   return request({
     url: api.queryVirtualMachine,
+    method: 'get',
+    params: parameter
+  })
+}
+
+export function queryDc (parameter) {
+  return request({
+    url: api.queryDc,
+    method: 'get',
+    params: parameter
+  })
+}
+
+export function queryNetworkLabel (parameter) {
+  return request({
+    url: api.queryNetworkLabel,
     method: 'get',
     params: parameter
   })

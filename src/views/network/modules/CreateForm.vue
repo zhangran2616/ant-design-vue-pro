@@ -1,6 +1,6 @@
 <template>
   <a-modal
-    title="新建子网"
+    :title=" model && model.id > 0? '编辑子网' : '新建子网' "
     :width="640"
     :visible="visible"
     :confirmLoading="loading"
@@ -15,28 +15,28 @@
           <a-input v-decorator="['id', { initialValue: 0 }]" disabled />
         </a-form-item>
         <a-form-item label="云平台">
-          <a-select placeholder="请选择" v-decorator="['cpfId', {rules: [{required: true, message: '请选择云平台'}]}]">
+          <a-select @change="getDc" placeholder="请选择" v-decorator="['cpfId', {rules: [{required: true, message: '请选择云平台'}]}]">
             <a-select-option v-for="(item, index) in platforms" :value="item.id" :key="index">{{ item.name }}</a-select-option>
           </a-select>
         </a-form-item>
         <a-form-item label="数据中心">
-          <a-select placeholder="请选择" v-decorator="['datacenter', {rules: [{required: true, message: '请选择数据中心'}]}]">
-            <a-select-option v-for="(item, index) in datacenters" :value="item.id" :key="index">{{ item.name }}</a-select-option>
+          <a-select @change="getNetworkLabel" placeholder="请选择" v-decorator="['datacenter', {rules: [{required: true, message: '请选择数据中心'}]}]">
+            <a-select-option v-for="(item, index) in datacenters" :value="item.uuid" :key="index">{{ item.name }}</a-select-option>
           </a-select>
         </a-form-item>
-        <a-form-item label="网络端口组">
+        <a-form-item label="网络标签">
           <a-select placeholder="请选择" v-decorator="['networkLabel', {rules: [{required: true, message: '请选择网络标签'}]}]">
-            <a-select-option v-for="(item, index) in networkLabels" :value="item.id" :key="index">{{ item.name }}</a-select-option>
+            <a-select-option v-for="(item, index) in networkLabels" :value="item.uuid" :key="index">{{ item.name }}</a-select-option>
           </a-select>
         </a-form-item>
         <a-form-item label="名称">
           <a-input v-decorator="['name', {rules: [{required: true, min: 1, max: 200, message: '请输入名称长度1-200个字符！'}]}]" />
         </a-form-item>
         <a-form-item label="IP范围">
-          <a-input v-decorator="['ip_pool', {rules: [{required: true, min: 1,max: 200, message: '请输入IP范围长度1-200个字符！'}]}]" />
+          <a-input v-decorator="['ipPool', {rules: [{required: true, min: 1,max: 200, message: '请输入IP范围长度1-200个字符！'}]}]" />
         </a-form-item>
         <a-form-item label="网关">
-          <a-input v-decorator="['getway', {rules: [{required: true, min: 1,max: 20, message: '请输入网关长度1-20个字符！'}]}]" />
+          <a-input v-decorator="['gateway', {rules: [{required: true, min: 1,max: 20, message: '请输入网关长度1-20个字符！'}]}]" />
         </a-form-item>
         <a-form-item label="掩码">
           <a-input v-decorator="['mask', {rules: [{required: true, min: 1, max: 20, message: '请输入掩码长度1-20个字符！'}]}]" />
@@ -54,9 +54,10 @@
 
 <script>
 import pick from 'lodash.pick'
+import { queryDc, queryNetworkLabel } from '@/api/resource'
 
 // 表单字段
-const fields = ['name', 'id', 'name', 'ip_pool', 'getway', 'mask', 'dns2', 'dns1', 'cpfId', 'datacenter', 'networkLabel']
+const fields = ['id', 'name', 'ipPool', 'gateway', 'mask', 'dns2', 'dns1', 'cpfId', 'datacenter', 'networkLabel']
 
 export default {
   props: {
@@ -105,6 +106,26 @@ export default {
     this.$watch('model', () => {
       this.model && this.form.setFieldsValue(pick(this.model, fields))
     })
+  },
+  mounted () {
+    this.getDc()
+    this.getNetworkLabel()
+  },
+  methods: {
+    getDc (cpfId) {
+      const requestParameters = { 'pageSize': -1, 'cpfId': cpfId }
+      queryDc(requestParameters)
+      .then(res => {
+       this.datacenters = res.data.records
+      })
+    },
+    getNetworkLabel (uuid) {
+      const requestParameters = { 'pageSize': -1, 'uuid': uuid }
+      queryNetworkLabel(requestParameters)
+      .then(res => {
+       this.networkLabels = res.data.records
+      })
+    }
   }
 }
 </script>
