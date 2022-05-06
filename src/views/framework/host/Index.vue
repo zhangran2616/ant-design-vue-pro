@@ -75,7 +75,14 @@ const columns = [
   },
   {
     title: '内存',
-    dataIndex: 'memory'
+    dataIndex: 'memory',
+    customRender: (text, record, index) => {
+      if (text < 1099511627776) {
+        return (text / 1024 / 1024 / 1024).toFixed(2) + 'GB'
+      } else {
+        return (text / 1024 / 1024 / 1024 / 1024).toFixed(2) + 'TB'
+      }
+    }
   },
   {
     title: '云平台',

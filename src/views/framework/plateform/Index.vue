@@ -84,7 +84,7 @@ const columns = [
     dataIndex: 'templateCount'
   },
   {
-    title: '修改时间',
+    title: '同步时间',
     dataIndex: 'createTime'
   },
   {

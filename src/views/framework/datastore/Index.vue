@@ -71,17 +71,36 @@ const columns = [
   },
   {
     title: '总容量',
-    dataIndex: 'capacity'
+    dataIndex: 'capacity',
+    customRender: (text, record, index) => {
+      if (text < 1099511627776) {
+        return (text / 1024 / 1024 / 1024).toFixed(2) + 'GB'
+      } else {
+        return (text / 1024 / 1024 / 1024 / 1024).toFixed(2) + 'TB'
+      }
+    }
   },
   {
     title: '已用容量',
     customRender: (text, record, index) => {
-      return record.capacity - record.freeSpace
+      const used = record.capacity - record.freeSpace
+      if (used < 1099511627776) {
+        return (used / 1024 / 1024 / 1024).toFixed(2) + 'GB'
+      } else {
+        return (used / 1024 / 1024 / 1024 / 1024).toFixed(2) + 'TB'
+      }
     }
   },
   {
     title: '可用容量',
-    dataIndex: 'freeSpace'
+    dataIndex: 'freeSpace',
+    customRender: (text, record, index) => {
+      if (text < 1099511627776) {
+        return (text / 1024 / 1024 / 1024).toFixed(2) + 'GB'
+      } else {
+        return (text / 1024 / 1024 / 1024 / 1024).toFixed(2) + 'TB'
+      }
+    }
   },
   {
     title: '可用率',

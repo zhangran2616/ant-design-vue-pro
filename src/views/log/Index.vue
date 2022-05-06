@@ -55,10 +55,7 @@
           {{ index + 1 }}
         </span>
         <span slot="status" slot-scope="text">
-          <a-badge :status="text | statusTypeFilter" :text="text | statusFilter" />
-        </span>
-        <span slot="description" slot-scope="text">
-          <ellipsis :length="4" tooltip>{{ text }}</ellipsis>
+          <a-tag :color=" text === 'success' ? 'green' : 'volcano' ">{{ text === 'success' ? '成功':'失败' }}</a-tag>
         </span>
       </s-table>
 
@@ -94,7 +91,8 @@ const columns = [
   },
   {
     title: '操作结果',
-    dataIndex: 'result'
+    dataIndex: 'result',
+    scopedSlots: { customRender: 'status' }
   },
   {
     title: '操作者IP',

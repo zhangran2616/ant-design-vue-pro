@@ -78,12 +78,8 @@
           {{ index + 1 }}
         </span>
         <span slot="status" slot-scope="text">
-          <a-badge :status="text | statusTypeFilter" :text="text | statusFilter" />
+          <a-tag :color=" text === 0 ? 'green' : 'volcano' ">{{ text === 0 ? '启用':'禁用' }}</a-tag>
         </span>
-        <span slot="description" slot-scope="text">
-          <ellipsis :length="4" tooltip>{{ text }}</ellipsis>
-        </span>
-
         <span slot="action" slot-scope="text, record">
           <template>
             <a v-action:userUpdate @click="handleEdit(record)">修改</a>
@@ -133,13 +129,14 @@ const columns = [
   {
     title: '状态',
     dataIndex: 'status',
-    customRender: (h, scope) => {
-      if (h === 0) {
-        return '启用'
-      } else {
-        return '禁用'
-      }
-    }
+    // customRender: (h, scope) => {
+    //   if (h === 0) {
+    //     return '启用'
+    //   } else {
+    //     return '禁用'
+    //   }
+    // }
+    scopedSlots: { customRender: 'status' }
   },
   {
     title: '邮箱',

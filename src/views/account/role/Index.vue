@@ -78,7 +78,7 @@ const columns = [
     dataIndex: 'description'
   },
   {
-    title: '修改时间',
+    title: '创建时间',
     dataIndex: 'createTime'
   },
   {
