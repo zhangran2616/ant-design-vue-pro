@@ -60,7 +60,7 @@ const columns = [
   },
   {
     title: 'IP',
-    dataIndex: 'ip'
+    dataIndex: 'ipv4'
   },
   {
     title: '状态',
