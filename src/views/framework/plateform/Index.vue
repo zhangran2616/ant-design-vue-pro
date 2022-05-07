@@ -3,6 +3,7 @@
     <a-card :bordered="false">
       <div class="table-operator">
         <a-button v-action:plateformAdd type="primary" icon="plus" @click="handleAdd">新建</a-button>
+        <a-button v-action:plateformAdd type="dashed" icon="api" @click="handleIsOnline">连接状态</a-button>
       </div>
 
       <s-table
@@ -18,18 +19,20 @@
         <span slot="serial" slot-scope="text, record, index">
           {{ index + 1 }}
         </span>
-        <span slot="status" slot-scope="text">
-          <a-badge :status="text | statusTypeFilter" :text="text | statusFilter" />
+        <span slot="detail" slot-scope="text,record">
+          <a @click="showDetail(record)">{{ text }}</a>
         </span>
-        <span slot="description" slot-scope="text">
-          <ellipsis :length="4" tooltip>{{ text }}</ellipsis>
-        </span>
-
+        <!-- <span slot="status" slot-scope="text">
+          <a-tag :color=" text === 0 ? 'green' : 'volcano' ">{{ text === 0 ? '启用':'禁用' }}</a-tag>
+        </span> -->
+        <template slot="status" slot-scope="text">
+          <span :v-text="getStatus(text)">aq</span>
+        </template>
         <span slot="action" slot-scope="text, record">
           <template>
             <a v-action:plateformUpdate @click="handleEdit(record)">修改</a>
             <a-divider type="vertical" />
-            <a v-action:plateformSync @click="handlePermission(record)">同步</a>
+            <a v-action:plateformSync @click="handleSync(record)">同步</a>
             <a-divider type="vertical" />
             <a v-action:plateformDelete @click="handleDel(record)">删除</a>
           </template>
@@ -50,7 +53,7 @@
 
 <script>
 import { STable, Ellipsis } from '@/components'
-import { queryPlatform, addPlatform, updatePlatform, deletePlatform } from '@/api/resource'
+import { queryPlatform, addPlatform, updatePlatform, deletePlatform, isOnline } from '@/api/resource'
 import CreateForm from './modules/CreateForm'
 import { Modal } from 'ant-design-vue'
 
@@ -61,7 +64,8 @@ const columns = [
   },
   {
     title: '名称',
-    dataIndex: 'name'
+    dataIndex: 'name',
+    scopedSlots: { customRender: 'detail' }
   },
   {
     title: '类型',
@@ -73,7 +77,8 @@ const columns = [
   },
   {
     title: '连接状态',
-    dataIndex: 'connect'
+    dataIndex: 'id',
+    scopedSlots: { customRender: 'status' }
   },
   {
     title: '云实例',
@@ -109,20 +114,21 @@ export default {
       visible: false,
       confirmLoading: false,
       mdl: null,
-      mdlPermission: null,
       // 查询参数
       queryParam: {},
+      platformList: [],
       // 加载数据方法 必须为 Promise 对象
       loadData: parameter => {
         const requestParameters = Object.assign({}, parameter, this.queryParam)
-        console.log('loadData request parameters:', requestParameters)
         return queryPlatform(requestParameters)
           .then(res => {
+            this.platformList = res.data.records
             return res.data
           })
       },
       selectedRowKeys: [],
-      selectedRows: []
+      selectedRows: [],
+      platformStatusMap: {}
     }
   },
   created () {
@@ -219,8 +225,27 @@ export default {
       this.selectedRowKeys = selectedRowKeys
       this.selectedRows = selectedRows
     },
-    handlePermissionCancel () {
-      this.visiblePermission = false
+    showDetail (record) {
+      this.$router.push({
+        path: '/framework/platform/detail'
+      })
+    },
+    handleIsOnline () {
+      console.log(this.loadData)
+      if (this.platformList) {
+        this.platformList.forEach(f => {
+          const params = { id: f.id }
+          isOnline(params).then(res => {
+            console.log('@', res.data)
+            this.platformStatusMap[f.id] = res.data
+            console.log('@', this.platformStatusMap)
+          })
+        })
+      }
+    },
+    getStatus (status) {
+      console.log('@@@', status)
+      return status
     }
   }
 }

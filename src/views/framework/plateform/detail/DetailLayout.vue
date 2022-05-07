@@ -1,3 +1,3 @@
 <template>
-  <h1>AAA</h1>
+  <h2>TEST</h2>
 </template>

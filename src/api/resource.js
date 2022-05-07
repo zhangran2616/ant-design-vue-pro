@@ -14,7 +14,8 @@ const api = {
   queryStore: '/cmp/platform/queryStore',
   queryVirtualMachine: '/cmp/vm/queryVirtualMachine',
   queryDc: '/cmp/platform/queryDc',
-  queryNetworkLabel: '/cmp/platform/queryNetworkLabel'
+  queryNetworkLabel: '/cmp/platform/queryNetworkLabel',
+  isOnline: '/cmp/platform/isOnline'
 }
 
 export default api
@@ -126,6 +127,14 @@ export function queryDc (parameter) {
 export function queryNetworkLabel (parameter) {
   return request({
     url: api.queryNetworkLabel,
+    method: 'get',
+    params: parameter
+  })
+}
+
+export function isOnline (parameter) {
+  return request({
+    url: api.isOnline,
     method: 'get',
     params: parameter
   })

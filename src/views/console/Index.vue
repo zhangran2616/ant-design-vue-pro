@@ -4,7 +4,7 @@
       <div class="table-operator">
         <a-button type="primary" icon="plus" @click="handleAdd">创建</a-button>
         <a-button type="text" icon="login" @click="handleAdd">开机</a-button>
-        <a-button type="danger" icon="poweroff" @click="handleAdd">关机</a-button>
+        <a-button type="text" icon="poweroff" @click="handleAdd">关机</a-button>
         <a-button type="text" icon="reload" @click="handleAdd">重启</a-button>
       </div>
 

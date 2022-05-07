@@ -39,6 +39,14 @@
         <span slot="status" slot-scope="text">
           <a-tag :color=" text === 0 ? 'green' : 'volcano' ">{{ text === 0 ? '启用':'禁用' }}</a-tag>
         </span>
+        <template slot="changeStatus" slot-scope="status, record">
+          <a-switch
+            checkedChildren="启用"
+            unCheckedChildren="禁用"
+            :checked="!Boolean(status)"
+            @change="changeSubnetStatus(record)"
+          />
+        </template>
         <span slot="action" slot-scope="text, record">
           <template>
             <a v-action:subnetUpdate @click="handleEdit(record)">修改</a>
@@ -88,7 +96,8 @@ const columns = [
   {
     title: '状态',
     dataIndex: 'status',
-    scopedSlots: { customRender: 'status' }
+    // scopedSlots: { customRender: 'status' }
+    scopedSlots: { customRender: 'changeStatus' }
   },
   {
     title: '掩码',
@@ -265,6 +274,14 @@ export default {
       queryPlatform(requestParameters)
       .then(res => {
        this.platforms = res.data.records
+      })
+    },
+    changeSubnetStatus (record) {
+      record.status = record.status === 0 ? 1 : 0
+      updateSubnet(record).then(res => {
+        if (res.code === 0) {
+          this.$message.success('修改成功')
+        }
       })
     }
   }
