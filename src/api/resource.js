@@ -17,7 +17,13 @@ const api = {
   queryDc: '/cmp/platform/queryDc',
   queryNetworkLabel: '/cmp/platform/queryNetworkLabel',
   queryTemplate: '/cmp/platform/queryTemplate',
-  isOnline: '/cmp/platform/isOnline'
+  isOnline: '/cmp/platform/isOnline',
+  powerOn: '/cmp/vm/powerOn',
+  powerOff: '/cmp/vm/powerOff',
+  reboot: '/cmp/vm/reboot',
+  shutdown: '/cmp/vm/shutdown',
+  suspend: '/cmp/vm/suspend',
+  destroy: '/cmp/vm/destroy'
 }
 
 export default api
@@ -155,5 +161,53 @@ export function isOnline (parameter) {
     url: api.isOnline,
     method: 'get',
     params: parameter
+  })
+}
+
+export function powerOn (parameter) {
+  return request({
+    url: api.powerOn,
+    method: 'post',
+    data: parameter
+  })
+}
+
+export function powerOff (parameter) {
+  return request({
+    url: api.powerOff,
+    method: 'post',
+    data: parameter
+  })
+}
+
+export function reboot (parameter) {
+  return request({
+    url: api.reboot,
+    method: 'post',
+    data: parameter
+  })
+}
+
+export function shutdown (parameter) {
+  return request({
+    url: api.shutdown,
+    method: 'post',
+    data: parameter
+  })
+}
+
+export function suspend (parameter) {
+  return request({
+    url: api.suspend,
+    method: 'post',
+    data: parameter
+  })
+}
+
+export function destroy (parameter) {
+  return request({
+    url: api.destroy,
+    method: 'post',
+    data: parameter
   })
 }

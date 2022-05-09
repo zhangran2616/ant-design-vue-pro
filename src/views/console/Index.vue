@@ -62,16 +62,33 @@
       </div>
 
       <div class="table-operator">
-        <a-button type="primary" icon="plus" @click="handleAdd">创建</a-button>
-        <a-button type="text" icon="login" @click="handleAdd">开机</a-button>
-        <a-button type="text" icon="poweroff" @click="handleAdd">关机</a-button>
-        <a-button type="text" icon="reload" @click="handleAdd">重启</a-button>
+        <a-button type="primary" icon="plus" @click="createVm">创建</a-button>
+        <a-button type="text" icon="login" @click="powerOnVm">开机</a-button>
+        <a-button type="text" icon="poweroff" @click="shutdownVm">关机</a-button>
+        <a-button type="text" icon="reload" @click="rebootVm">重启</a-button>
+        <a-dropdown>
+          <a-menu slot="overlay" @click="handleMenuClick">
+            <a-menu-item key="powderOff">
+              强制关机
+            </a-menu-item>
+            <a-menu-item key="suspend">
+              挂起
+            </a-menu-item>
+            <a-menu-item key="powerOn">
+              恢复
+            </a-menu-item>
+            <a-menu-item key="destroy">
+              销毁
+            </a-menu-item>
+          </a-menu>
+          <a-button> 更多操作 <a-icon type="down" /> </a-button>
+        </a-dropdown>
       </div>
 
       <s-table
         ref="table"
         size="default"
-        rowKey="id"
+        :rowKey="item=>item.id"
         :columns="columns"
         :data="loadData"
         :alert="true"
@@ -113,7 +130,7 @@
 <script>
 import moment from 'moment'
 import { STable, Ellipsis } from '@/components'
-import { queryVm } from '@/api/resource'
+import { queryVm, powerOn, shutdown, reboot, powerOff, suspend, destroy } from '@/api/resource'
 import CreateForm from './modules/CreateForm'
 import { Modal } from 'ant-design-vue'
 
@@ -171,7 +188,6 @@ export default {
       visible: false,
       confirmLoading: false,
       mdl: null,
-      mdlPermission: null,
       advanced: false,
       // 查询参数
       queryParam: {},
@@ -200,37 +216,16 @@ export default {
     }
   },
   methods: {
-    handleAdd () {
+    createVm () {
       this.mdl = null
       this.visible = true
     },
-    handleEdit (record) {
-      this.visible = true
-      this.mdl = { ...record }
-    },
+
     handleOk () {
       const form = this.$refs.createModal.form
       this.confirmLoading = true
       form.validateFields((errors, values) => {
         if (!errors) {
-          if (values.id > 0) {
-            // 修改 e.g.
-            queryVm(values).then(res => {
-              if (res.code !== 0) {
-                this.$message.error(res.message)
-              } else {
-                this.$message.success('修改成功')
-              }
-            }).finally(() => {
-                this.visible = false
-                this.confirmLoading = false
-                // 重置表单数据
-                form.resetFields()
-                // 刷新表格
-                this.$refs.table.refresh()
-            })
-          } else {
-            // 新增
             queryVm(values).then(res => {
               if (res.code !== 0) {
                 this.$message.error(res.message)
@@ -245,7 +240,6 @@ export default {
                 // 刷新表格
                 this.$refs.table.refresh()
             })
-          }
         } else {
           this.confirmLoading = false
         }
@@ -290,6 +284,99 @@ export default {
       this.queryParam = {
         date: moment(new Date())
       }
+    },
+    powerOnVm () {
+      const params = {
+        ids: this.selectedRowKeys
+      }
+      powerOn(params).then(res => {
+        if (res.code !== 0) {
+            this.$message.error(res.message)
+        } else {
+          this.$message.success('启动开机操作,大约需要30秒左右')
+        }
+      }).finally(() => {
+        // 刷新表格
+        this.$refs.table.refresh()
+      })
+    },
+    shutdownVm () {
+     const params = {
+        ids: this.selectedRowKeys
+      }
+      shutdown(params).then(res => {
+        if (res.code !== 0) {
+            this.$message.error(res.message)
+        } else {
+          this.$message.success('启动关机操作,大约需要30秒左右')
+        }
+      }).finally(() => {
+        // 刷新表格
+        this.$refs.table.refresh()
+      })
+    },
+    rebootVm () {
+     const params = {
+        ids: this.selectedRowKeys
+      }
+      reboot(params).then(res => {
+        if (res.code !== 0) {
+            this.$message.error(res.message)
+        } else {
+          this.$message.success('启动重启操作,大约需要60秒左右')
+        }
+      }).finally(() => {
+        // 刷新表格
+        this.$refs.table.refresh()
+      })
+    },
+    powerOffVm () {
+     const params = {
+        ids: this.selectedRowKeys
+      }
+      powerOff(params).then(res => {
+        if (res.code !== 0) {
+            this.$message.error(res.message)
+        } else {
+          this.$message.success('启动强制关机操作,大约需要30秒左右')
+        }
+      }).finally(() => {
+        // 刷新表格
+        this.$refs.table.refresh()
+      })
+    },
+    suspendVm () {
+     const params = {
+        ids: this.selectedRowKeys
+      }
+      suspend(params).then(res => {
+        if (res.code !== 0) {
+            this.$message.error(res.message)
+        } else {
+          this.$message.success('启动挂起操作,大约需要30秒左右')
+        }
+      }).finally(() => {
+        // 刷新表格
+        this.$refs.table.refresh()
+      })
+    },
+    destroyVm () {
+     const params = {
+        ids: this.selectedRowKeys
+      }
+      destroy(params).then(res => {
+        if (res.code !== 0) {
+            this.$message.error(res.message)
+        } else {
+          this.$message.success('启动销毁操作,大约需要30秒左右')
+        }
+      }).finally(() => {
+        // 刷新表格
+        this.$refs.table.refresh()
+      })
+    },
+    handleMenuClick (key) {
+      console.log('click', key)
     }
   }
 }

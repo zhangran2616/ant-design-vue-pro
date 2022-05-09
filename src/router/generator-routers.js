@@ -55,6 +55,14 @@ const constantRouterComponents = {
   // 'TestWork': () => import(/* webpackChunkName: "TestWork" */ '@/views/dashboard/TestWork')
 }
 
+const PlatformDetail = {
+  path: '/framework/platform/detail',
+  name: 'PlatformDetail',
+  component: 'framework/platform/detail/DetailLayout',
+  hideChildrenInMenu: true,
+  meta: { show: false, hidden: true, title: '平台详情', icon: 'profile' }
+}
+
 // 前端未找到页面路由（固定不用改）
 const notFoundRouter = {
   path: '*',
@@ -92,6 +100,7 @@ export const generatorDynamicRouter = token => {
         //      后端数据, 根级树数组,  根级 PID
         listToTree(data, childrenNav, 0)
         rootRouter.children = childrenNav
+        rootRouter.children.push(PlatformDetail)
         menuNav.push(rootRouter)
         console.log('menuNav', menuNav)
         const routers = generator(menuNav)
