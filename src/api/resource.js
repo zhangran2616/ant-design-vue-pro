@@ -6,6 +6,7 @@ const api = {
   updateSubnet: '/cmp/network/updateSubnet',
   deleteSubnet: '/cmp/network/deleteSubnet',
   queryPlatform: '/cmp/platform/queryPlatform',
+  getPlatformDetail: '/cmp/platform/getPlatformDetail',
   addPlatform: '/cmp/platform/addPlatform',
   updatePlatform: '/cmp/platform/updatePlatform',
   deletePlatform: '/cmp/platform/deletePlatform',
@@ -56,6 +57,14 @@ export function deleteSubnet (parameter) {
 export function queryPlatform (parameter) {
   return request({
     url: api.queryPlatform,
+    method: 'get',
+    params: parameter
+  })
+}
+
+export function getPlatformDetail (parameter) {
+  return request({
+    url: api.getPlatformDetail,
     method: 'get',
     params: parameter
   })
