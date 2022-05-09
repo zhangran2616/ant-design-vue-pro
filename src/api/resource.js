@@ -12,9 +12,10 @@ const api = {
   queryCluster: '/cmp/platform/queryCluster',
   queryHost: '/cmp/platform/queryHost',
   queryStore: '/cmp/platform/queryStore',
-  queryVirtualMachine: '/cmp/vm/queryVirtualMachine',
+  queryVm: '/cmp/vm/queryVm',
   queryDc: '/cmp/platform/queryDc',
   queryNetworkLabel: '/cmp/platform/queryNetworkLabel',
+  queryTemplate: '/cmp/platform/queryTemplate',
   isOnline: '/cmp/platform/isOnline'
 }
 
@@ -108,9 +109,9 @@ export function queryStore (parameter) {
   })
 }
 
-export function queryVirtualMachine (parameter) {
+export function queryVm (parameter) {
   return request({
-    url: api.queryVirtualMachine,
+    url: api.queryVm,
     method: 'get',
     params: parameter
   })
@@ -127,6 +128,14 @@ export function queryDc (parameter) {
 export function queryNetworkLabel (parameter) {
   return request({
     url: api.queryNetworkLabel,
+    method: 'get',
+    params: parameter
+  })
+}
+
+export function queryTemplate (parameter) {
+  return request({
+    url: api.queryTemplate,
     method: 'get',
     params: parameter
   })
