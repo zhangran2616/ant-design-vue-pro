@@ -1,6 +1,66 @@
 <template>
   <page-header-wrapper>
     <a-card :bordered="false">
+      <div class="table-page-search-wrapper">
+        <a-form layout="inline">
+          <a-row :gutter="48">
+            <a-col :md="6" :sm="24">
+              <a-form-item label="机器名">
+                <a-input v-model="queryParam.name" placeholder=""/>
+              </a-form-item>
+            </a-col>
+            <a-col :md="3" :sm="24">
+              <a-form-item label="IP">
+                <a-input v-model="queryParam.ipv4" style="width: 100%"/>
+              </a-form-item>
+            </a-col>
+            <a-col :md="4" :sm="24">
+              <a-form-item label="机器状态">
+                <a-select v-model="queryParam.instanceStatus" placeholder="请选择">
+                  <a-select-option value="">全部</a-select-option>
+                  <a-select-option value="1">开机</a-select-option>
+                  <a-select-option value="2">关机</a-select-option>
+                  <a-select-option value="3">挂起</a-select-option>
+                </a-select>
+              </a-form-item>
+            </a-col>
+            <a-col :md="4" :sm="24">
+              <a-form-item label="云平台">
+                <a-select v-model="queryParam.cpfId" placeholder="请选择">
+                  <a-select-option value="">全部</a-select-option>
+                  <a-select-option value="1">开机</a-select-option>
+                  <a-select-option value="2">关机</a-select-option>
+                  <a-select-option value="3">挂起</a-select-option>
+                </a-select>
+              </a-form-item>
+            </a-col>
+            <template v-if="advanced">
+              <a-col :md="6" :sm="24">
+                <a-form-item
+                  label="创建时间"
+                  :labelCol="{lg: {span: 7}, sm: {span: 7}}"
+                  :wrapperCol="{lg: {span: 10}, sm: {span: 17} }">
+                  <a-range-picker
+                    name="buildTime"
+                    style="width: 100%"
+                  />
+                </a-form-item>
+              </a-col>
+            </template>
+            <a-col :md="!advanced && 6 || 24" :sm="24">
+              <span class="table-page-search-submitButtons" :style="advanced && { float: 'right', overflow: 'hidden' } || {} ">
+                <a-button type="primary" @click="$refs.table.refresh(true)">查询</a-button>
+                <a-button style="margin-left: 8px" @click="() => this.queryParam = {}">重置</a-button>
+                <a @click="toggleAdvanced" style="margin-left: 8px">
+                  {{ advanced ? '收起' : '展开' }}
+                  <a-icon :type="advanced ? 'up' : 'down'"/>
+                </a>
+              </span>
+            </a-col>
+          </a-row>
+        </a-form>
+      </div>
+
       <div class="table-operator">
         <a-button type="primary" icon="plus" @click="handleAdd">创建</a-button>
         <a-button type="text" icon="login" @click="handleAdd">开机</a-button>
@@ -22,11 +82,18 @@
           {{ index + 1 }}
         </span>
         <span slot="status" slot-scope="text">
-          <a-badge :status="text | statusTypeFilter" :text="text | statusFilter" />
+          <a-tag v-if="text === 0" color="blue"><a-icon type="sync" spin /></a-tag>
+          <a-tag v-else-if="text === 1" color="green">开机</a-tag>
+          <a-tag v-else-if="text === 2" color="volcano">关机</a-tag>
+          <a-tag v-else-if="text === 3" color="yellow">挂起</a-tag>
         </span>
         <span slot="action" slot-scope="text, record">
           <template>
-            <a @click="handleEdit(record)">控制台</a>
+            <a-tooltip placement="topLeft" title="打开远程控制台" :mouseEnterDelay="mouseEnterDelay">
+              <div class="icons-list">
+                <span><a-icon type="desktop" style="font-size: 20px;" @click="handleEdit(record)"/></span>
+              </div>
+            </a-tooltip>
           </template>
         </span>
       </s-table>
@@ -44,8 +111,9 @@
 </template>
 
 <script>
+import moment from 'moment'
 import { STable, Ellipsis } from '@/components'
-import { queryVirtualMachine } from '@/api/resource'
+import { queryVm } from '@/api/resource'
 import CreateForm from './modules/CreateForm'
 import { Modal } from 'ant-design-vue'
 
@@ -59,12 +127,13 @@ const columns = [
     dataIndex: 'name'
   },
   {
-    title: 'IP',
+    title: 'IP地址',
     dataIndex: 'ipv4'
   },
   {
     title: '状态',
-    dataIndex: 'connect'
+    dataIndex: 'instanceStatus',
+    scopedSlots: { customRender: 'status' }
   },
   {
     title: '规格',
@@ -103,19 +172,21 @@ export default {
       confirmLoading: false,
       mdl: null,
       mdlPermission: null,
+      advanced: false,
       // 查询参数
       queryParam: {},
       // 加载数据方法 必须为 Promise 对象
       loadData: parameter => {
         const requestParameters = Object.assign({}, parameter, this.queryParam)
         console.log('loadData request parameters:', requestParameters)
-        return queryVirtualMachine(requestParameters)
+        return queryVm(requestParameters)
           .then(res => {
             return res.data
           })
       },
       selectedRowKeys: [],
-      selectedRows: []
+      selectedRows: [],
+      mouseEnterDelay: 0.4
     }
   },
   created () {
@@ -144,7 +215,7 @@ export default {
         if (!errors) {
           if (values.id > 0) {
             // 修改 e.g.
-            queryVirtualMachine(values).then(res => {
+            queryVm(values).then(res => {
               if (res.code !== 0) {
                 this.$message.error(res.message)
               } else {
@@ -160,7 +231,7 @@ export default {
             })
           } else {
             // 新增
-            queryVirtualMachine(values).then(res => {
+            queryVm(values).then(res => {
               if (res.code !== 0) {
                 this.$message.error(res.message)
               } else {
@@ -194,7 +265,7 @@ export default {
           const params = {
             id: record.id
           }
-          queryVirtualMachine(params).then(res => {
+          queryVm(params).then(res => {
             if (res.code !== 0) {
                 this.$message.error(res.message)
             } else {
@@ -212,8 +283,13 @@ export default {
       this.selectedRowKeys = selectedRowKeys
       this.selectedRows = selectedRows
     },
-    handlePermissionCancel () {
-      this.visiblePermission = false
+    toggleAdvanced () {
+      this.advanced = !this.advanced
+    },
+    resetSearchForm () {
+      this.queryParam = {
+        date: moment(new Date())
+      }
     }
   }
 }

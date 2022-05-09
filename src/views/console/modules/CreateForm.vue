@@ -1,6 +1,6 @@
 <template>
   <a-modal
-    :title=" model && model.id > 0? '编辑平台' : '新建平台' "
+    :title=" model && model.id > 0? '编辑虚拟机' : '新建虚拟机' "
     :width="640"
     :visible="visible"
     :confirmLoading="loading"
