@@ -227,7 +227,14 @@ export default {
     },
     showDetail (record) {
       this.$router.push({
-        path: '/framework/platform/detail'
+         path: '/framework/platform/detail',
+         query: {
+           cpfId: record.id
+         }
+        // name: 'PlatformDetail',
+        // params: {
+        //   cpfId: record.id
+        // }
       })
     },
     handleIsOnline () {
