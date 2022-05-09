@@ -22,12 +22,11 @@
         <span slot="detail" slot-scope="text,record">
           <a @click="showDetail(record)">{{ text }}</a>
         </span>
-        <!-- <span slot="status" slot-scope="text">
-          <a-tag :color=" text === 0 ? 'green' : 'volcano' ">{{ text === 0 ? '启用':'禁用' }}</a-tag>
-        </span> -->
-        <template slot="status" slot-scope="text">
-          <span :v-text="getStatus(text)">aq</span>
-        </template>
+        <span slot="status" slot-scope="text">
+          <a-tag v-if="!text" color="blue"><a-icon type="loading"/></a-tag>
+          <a-tag v-else-if="text === '正常'" color="green">正常</a-tag>
+          <a-tag v-else-if="text === '失联'" color="volcano">失联</a-tag>
+        </span>
         <span slot="action" slot-scope="text, record">
           <template>
             <a v-action:plateformUpdate @click="handleEdit(record)">修改</a>
@@ -77,7 +76,7 @@ const columns = [
   },
   {
     title: '连接状态',
-    dataIndex: 'id',
+    dataIndex: 'status',
     scopedSlots: { customRender: 'status' }
   },
   {
@@ -123,15 +122,18 @@ export default {
         return queryPlatform(requestParameters)
           .then(res => {
             this.platformList = res.data.records
+            this.handleIsOnline()
             return res.data
           })
       },
       selectedRowKeys: [],
-      selectedRows: [],
-      platformStatusMap: {}
+      selectedRows: []
     }
   },
   created () {
+  },
+  mounted () {
+
   },
   computed: {
     rowSelection () {
@@ -238,21 +240,15 @@ export default {
       })
     },
     handleIsOnline () {
-      console.log(this.loadData)
       if (this.platformList) {
         this.platformList.forEach(f => {
+          f.status = null
           const params = { id: f.id }
           isOnline(params).then(res => {
-            console.log('@', res.data)
-            this.platformStatusMap[f.id] = res.data
-            console.log('@', this.platformStatusMap)
+            f.status = res.data ? '正常' : '失联'
           })
         })
       }
-    },
-    getStatus (status) {
-      console.log('@@@', status)
-      return status
     }
   }
 }
