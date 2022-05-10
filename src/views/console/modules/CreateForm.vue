@@ -1,7 +1,7 @@
 <template>
   <a-modal
     :title=" model && model.id > 0? '编辑虚拟机' : '新建虚拟机' "
-    :width="640"
+    :width="1140"
     :visible="visible"
     :confirmLoading="loading"
     @ok="() => { $emit('ok') }"
@@ -25,6 +25,42 @@
         </a-form-item>
         <a-form-item label="IP">
           <a-input v-decorator="['ip', {rules: [{required: true, min: 1, max: 500, message: '请输入IP长度1-500个字符！'}]}]" />
+        </a-form-item>
+        <a-form-item label="用户名">
+          <a-input v-decorator="['username', {rules: [{required: true, min: 1, max: 500, message: '请输入用户名长度1-500个字符！'}]}]" />
+        </a-form-item>
+        <a-form-item label="用户名">
+          <a-input v-decorator="['username', {rules: [{required: true, min: 1, max: 500, message: '请输入用户名长度1-500个字符！'}]}]" />
+        </a-form-item>
+        <a-form-item label="用户名">
+          <a-input v-decorator="['username', {rules: [{required: true, min: 1, max: 500, message: '请输入用户名长度1-500个字符！'}]}]" />
+        </a-form-item>
+        <a-form-item label="用户名">
+          <a-input v-decorator="['username', {rules: [{required: true, min: 1, max: 500, message: '请输入用户名长度1-500个字符！'}]}]" />
+        </a-form-item>
+        <a-form-item label="用户名">
+          <a-input v-decorator="['username', {rules: [{required: true, min: 1, max: 500, message: '请输入用户名长度1-500个字符！'}]}]" />
+        </a-form-item>
+        <a-form-item label="用户名">
+          <a-input v-decorator="['username', {rules: [{required: true, min: 1, max: 500, message: '请输入用户名长度1-500个字符！'}]}]" />
+        </a-form-item>
+
+        <a-form-item label="用户名">
+          <a-input v-decorator="['username', {rules: [{required: true, min: 1, max: 500, message: '请输入用户名长度1-500个字符！'}]}]" />
+        </a-form-item>
+
+        <a-form-item label="用户名">
+          <a-input v-decorator="['username', {rules: [{required: true, min: 1, max: 500, message: '请输入用户名长度1-500个字符！'}]}]" />
+        </a-form-item>
+        <a-form-item label="用户名">
+          <a-input v-decorator="['username', {rules: [{required: true, min: 1, max: 500, message: '请输入用户名长度1-500个字符！'}]}]" />
+        </a-form-item>
+        <a-form-item label="用户名">
+          <a-input v-decorator="['username', {rules: [{required: true, min: 1, max: 500, message: '请输入用户名长度1-500个字符！'}]}]" />
+        </a-form-item>
+
+        <a-form-item label="用户名">
+          <a-input v-decorator="['username', {rules: [{required: true, min: 1, max: 500, message: '请输入用户名长度1-500个字符！'}]}]" />
         </a-form-item>
         <a-form-item label="用户名">
           <a-input v-decorator="['username', {rules: [{required: true, min: 1, max: 500, message: '请输入用户名长度1-500个字符！'}]}]" />
@@ -62,11 +98,11 @@ export default {
     this.formLayout = {
       labelCol: {
         xs: { span: 24 },
-        sm: { span: 7 }
+        sm: { span: 5 }
       },
       wrapperCol: {
         xs: { span: 24 },
-        sm: { span: 13 }
+        sm: { span: 15 }
       }
     }
     return {

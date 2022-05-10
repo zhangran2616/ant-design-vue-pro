@@ -63,18 +63,18 @@
 
       <div class="table-operator">
         <a-button type="primary" icon="plus" @click="createVm">创建</a-button>
-        <a-button type="text" icon="login" @click="powerOnVm">开机</a-button>
-        <a-button type="text" icon="poweroff" @click="shutdownVm">关机</a-button>
-        <a-button type="text" icon="reload" @click="rebootVm">重启</a-button>
+        <a-button type="text" :disabled="disabledpoweron" icon="login" @click="powerOnVm">开机</a-button>
+        <a-button type="text" :disabled="disabledshutdown" icon="poweroff" @click="shutdownVm">关机</a-button>
+        <a-button type="text" :disabled="disabledreboot" icon="reload" @click="rebootVm">重启</a-button>
         <a-dropdown>
           <a-menu slot="overlay" @click="handleMenuClick">
-            <a-menu-item key="powderOff">
+            <a-menu-item :disabled="disabledpoweroff" key="powderOff">
               强制关机
             </a-menu-item>
-            <a-menu-item key="suspend">
+            <a-menu-item :disabled="disabledsuspend" key="suspend">
               挂起
             </a-menu-item>
-            <a-menu-item key="powerOn">
+            <a-menu-item :disabled="disabledpoweron" key="powerOn">
               恢复
             </a-menu-item>
             <a-menu-item key="destroy">
@@ -202,7 +202,12 @@ export default {
       },
       selectedRowKeys: [],
       selectedRows: [],
-      mouseEnterDelay: 0.4
+      mouseEnterDelay: 0.4,
+      disabledpoweron: false,
+      disabledshutdown: false,
+      disabledreboot: false,
+      disabledpoweroff: false,
+      disabledsuspend: false
     }
   },
   created () {
@@ -276,6 +281,30 @@ export default {
     onSelectChange (selectedRowKeys, selectedRows) {
       this.selectedRowKeys = selectedRowKeys
       this.selectedRows = selectedRows
+      this.disabledpoweron = false
+      this.disabledshutdown = false
+      this.disabledreboot = false
+      this.disabledpoweroff = false
+      this.disabledsuspend = false
+      selectedRows.forEach(element => {
+        if (element.instanceStatus === 0) {
+          this.disabledpoweron = true
+          this.disabledshutdown = true
+          this.disabledreboot = true
+          this.disabledpoweroff = true
+        } else if (element.instanceStatus === 1) {
+          this.disabledpoweron = true
+        } else if (element.instanceStatus === 2) {
+          this.disabledshutdown = true
+          this.disabledreboot = true
+          this.disabledpoweroff = true
+          this.disabledsuspend = true
+        } else {
+          this.disabledshutdown = true
+          this.disabledreboot = true
+          this.disabledsuspend = true
+        }
+      })
     },
     toggleAdvanced () {
       this.advanced = !this.advanced
@@ -286,6 +315,10 @@ export default {
       }
     },
     powerOnVm () {
+      if (this.selectedRowKeys.length === 0) {
+        this.$message.warn('请勾选操作的数据')
+        return
+      }
       const params = {
         ids: this.selectedRowKeys
       }
@@ -301,6 +334,10 @@ export default {
       })
     },
     shutdownVm () {
+      if (this.selectedRowKeys.length === 0) {
+        this.$message.warn('请勾选操作的数据')
+        return
+      }
      const params = {
         ids: this.selectedRowKeys
       }
@@ -316,6 +353,10 @@ export default {
       })
     },
     rebootVm () {
+      if (this.selectedRowKeys.length === 0) {
+        this.$message.warn('请勾选操作的数据')
+        return
+      }
      const params = {
         ids: this.selectedRowKeys
       }
@@ -331,6 +372,10 @@ export default {
       })
     },
     powerOffVm () {
+      if (this.selectedRowKeys.length === 0) {
+        this.$message.warn('请勾选操作的数据')
+        return
+      }
      const params = {
         ids: this.selectedRowKeys
       }
@@ -346,6 +391,10 @@ export default {
       })
     },
     suspendVm () {
+      if (this.selectedRowKeys.length === 0) {
+        this.$message.warn('请勾选操作的数据')
+        return
+      }
      const params = {
         ids: this.selectedRowKeys
       }
@@ -361,6 +410,10 @@ export default {
       })
     },
     destroyVm () {
+      if (this.selectedRowKeys.length === 0) {
+        this.$message.warn('请勾选操作的数据')
+        return
+      }
      const params = {
         ids: this.selectedRowKeys
       }
