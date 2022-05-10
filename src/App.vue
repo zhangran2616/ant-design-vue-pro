@@ -1,7 +1,7 @@
 <template>
   <a-config-provider :locale="locale">
     <div id="app">
-      <router-view/>
+      <router-view v-if="isRouterAlice" />
     </div>
   </a-config-provider>
 </template>
@@ -13,6 +13,7 @@ import { i18nRender } from '@/locales'
 export default {
   data () {
     return {
+      isRouterAlice: true
     }
   },
   computed: {
@@ -22,6 +23,19 @@ export default {
       title && (setDocumentTitle(`${i18nRender(title)} - ${domTitle}`))
 
       return this.$i18n.getLocaleMessage(this.$store.getters.lang).antLocale
+    }
+  },
+  provide () {
+    return {
+      reload: this.reload
+    }
+  },
+  methods: {
+    reload () {
+      this.isRouterAlice = false
+      this.$nextTick(function () {
+        this.isRouterAlice = true
+      })
     }
   }
 }
