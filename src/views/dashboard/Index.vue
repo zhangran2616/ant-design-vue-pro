@@ -14,19 +14,14 @@ export default {
   },
   data () {
     return {
-      // create model
       visible: false,
       confirmLoading: false,
-      visiblePermission: false,
-      confirmPermissionLoading: false,
       mdl: null,
-      mdlPermission: null,
       // 查询参数
       queryParam: {},
       // 加载数据方法 必须为 Promise 对象
       loadData: parameter => {
         const requestParameters = Object.assign({}, parameter, this.queryParam)
-        console.log('loadData request parameters:', requestParameters)
         return getRoleList(requestParameters)
           .then(res => {
             return res.data
@@ -42,9 +37,7 @@ export default {
 
   },
   methods: {
-    handlePermissionCancel () {
-      this.visiblePermission = false
-    }
+
   }
 }
 </script>
