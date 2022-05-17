@@ -34,10 +34,10 @@
             <a-input v-decorator="['vmName', {rules: [{required: true, min: 1, max: 1000, message: '请输入实例名称长度1-1000个字符！'}]}]" />
           </a-form-item>
           <a-form-item label="CPU">
-            <a-input addon-after=" 核 " v-decorator="['cpu', {rules: [{required: true, message: 'CPU不能为空'}]}]" />
+            <a-input addon-after=" 核 " v-decorator="['cpu', {rules: [{required: true, validator: numberValidator}]}]" />
           </a-form-item>
           <a-form-item label="内存">
-            <a-input addon-after="GB" v-decorator="['memory', {rules: [{required: true, message: '内存不能为空'}]}]" />
+            <a-input addon-after="GB" v-decorator="['memory', {rules: [{required: true, validator: numberValidator}]}]" />
           </a-form-item>
         </div>
         <!-- 选择模板 -->
@@ -108,11 +108,11 @@
             <a-icon
               class="dynamic-delete-button"
               type="minus-circle-o"
-              @click="() => remove(k)"
+              @click="() => removeDisk(k)"
             />
           </a-form-item>
           <a-form-item v-bind="formItemLayoutWithOutLabel">
-            <a-button type="dashed" style="width: 60%" @click="add">
+            <a-button type="dashed" style="width: 60%" @click="addDisk">
               <a-icon type="plus-circle" /> 添加数据盘
             </a-button>
           </a-form-item>
@@ -201,7 +201,7 @@
                 ]"
                 placeholder="请选择子网"
                 style="margin-right: 8px"
-                @change="networksChange"
+                @change="getIp"
               >
                 <a-select-option :value="item.id" v-for="(item, v) in networkList" :key="v">
                   {{ item.name }}
@@ -222,8 +222,8 @@
                 placeholder="请选择子网"
                 style="margin-right: 8px"
               >
-                <a-select-option :value="item.id" v-for="(item, j) in ipList[networkId]" :key="j">
-                  {{ item.name }}
+                <a-select-option :value="item.id" v-for="(item, j) in ipList" :key="j">
+                  {{ item.ip }}
                 </a-select-option>
               </a-select>
             </a-form-item>
@@ -272,7 +272,7 @@ import pick from 'lodash.pick'
 import { queryDc, queryHost, queryTemplate, queryCluster, queryStore, querySubnet, queryIp } from '@/api/resource'
 
 // 表单字段
-const fields = ['cpfId', 'vmName']
+const fields = ['cpfId', 'vmName', 'cpu', 'memory']
 let id = 0
 let ip = 0
 export default {
@@ -306,6 +306,22 @@ export default {
       }
     }
     return {
+      numberValidator: (rule, value, callback) => {
+        const reg = /^[0-9]+[0-9]*]*$/
+        if (value) {
+          if (value !== '0') {
+            if (!reg.test(value)) {
+              callback(new Error('请输入正整数'))
+            } else {
+              callback()
+            }
+          } else {
+            callback(new Error('请输入正整数'))
+          }
+        } else {
+          callback(new Error('请输入正确的规格'))
+        }
+      },
       formItemLayout: {
         labelCol: {
           xs: { span: 23 },
@@ -332,9 +348,8 @@ export default {
       storageList: [],
       storageTypeList: [],
       networkList: [],
-      ipList: {},
-      folderList: [],
-      networkId: ''
+      ipList: [],
+      folderList: []
     }
   },
   beforeCreate () {
@@ -356,30 +371,20 @@ export default {
   },
   methods: {
     // 删除数据盘
-     remove (k) {
+     removeDisk (k) {
       const { form } = this
-      // can use data-binding to get
       const keys = form.getFieldValue('keys')
       console.log(keys)
-      // We need at least one passenger
-      // if (keys.length === 1) {
-      //   return
-      // }
-
-      // can use data-binding to set
       form.setFieldsValue({
         keys: keys.filter(key => key !== k)
       })
     },
     // 添加数据盘
-    add () {
+    addDisk () {
       const { form } = this
-      // can use data-binding to get
       const keys = form.getFieldValue('keys')
       console.log(keys)
       const nextKeys = keys.concat(id++)
-      // can use data-binding to set
-      // important! notify form to detect changes
       form.setFieldsValue({
         keys: nextKeys
       })
@@ -387,15 +392,8 @@ export default {
     // 删除网卡
     removeNetworks (k) {
       const { form } = this
-      // can use data-binding to get
       const networksKeys = form.getFieldValue('networksKeys')
       console.log(networksKeys)
-      // We need at least one passenger
-      // if (networksKeys.length === 1) {
-      //   return
-      // }
-
-      // can use data-binding to set
       form.setFieldsValue({
         networksKeys: networksKeys.filter(key => key !== k)
       })
@@ -403,19 +401,11 @@ export default {
     // 添加网卡
     addNetworks () {
       const { form } = this
-      // can use data-binding to get
       const networksKeys = form.getFieldValue('networksKeys')
       const nextKeys = networksKeys.concat(ip++)
-      // can use data-binding to set
-      // important! notify form to detect changes
       form.setFieldsValue({
         networksKeys: nextKeys
       })
-    },
-    // 网卡选中获取对应子网的ip列表
-    networksChange (id) {
-      this.networkId = id
-      this.ipList[id] = [{ id: 1, name: 'ip' + id }]
     },
     getDc (cpfId) {
       const requestParameters = { 'pageSize': -1, 'cpfId': cpfId }
@@ -472,7 +462,7 @@ export default {
       const requestParameters = { 'pageSize': -1, 'subnetId': subnetId }
       queryIp(requestParameters)
       .then(res => {
-       this.networkList = res.data.records
+       this.ipList = res.data.records
       })
     }
   }
