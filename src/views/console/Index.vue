@@ -120,6 +120,7 @@
         :visible="visible"
         :loading="confirmLoading"
         :model="mdl"
+        :cpfList="cpfList"
         @cancel="handleCancel"
         @ok="handleOk"
       />
@@ -130,7 +131,7 @@
 <script>
 import moment from 'moment'
 import { STable, Ellipsis } from '@/components'
-import { queryVm, powerOn, shutdown, reboot, powerOff, suspend, destroy } from '@/api/resource'
+import { queryVm, powerOn, shutdown, reboot, powerOff, suspend, destroy, queryPlatform } from '@/api/resource'
 import CreateForm from './modules/CreateForm'
 import { Modal } from 'ant-design-vue'
 
@@ -207,7 +208,8 @@ export default {
       disabledshutdown: false,
       disabledreboot: false,
       disabledpoweroff: false,
-      disabledsuspend: false
+      disabledsuspend: false,
+      cpfList: []
     }
   },
   created () {
@@ -221,7 +223,15 @@ export default {
     }
   },
   methods: {
+    handlePlatformList () {
+      const requestParameters = { 'pageSize': -1 }
+      queryPlatform(requestParameters)
+      .then(res => {
+       this.cpfList = res.data.records
+      })
+    },
     createVm () {
+      this.handlePlatformList()
       this.mdl = null
       this.visible = true
     },

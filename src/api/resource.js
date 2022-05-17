@@ -23,7 +23,8 @@ const api = {
   reboot: '/cmp/vm/reboot',
   shutdown: '/cmp/vm/shutdown',
   suspend: '/cmp/vm/suspend',
-  destroy: '/cmp/vm/destroy'
+  destroy: '/cmp/vm/destroy',
+  queryIp: '/cmp/network/queryIp'
 }
 
 export default api
@@ -209,5 +210,13 @@ export function destroy (parameter) {
     url: api.destroy,
     method: 'post',
     data: parameter
+  })
+}
+
+export function queryIp (parameter) {
+  return request({
+    url: api.queryIp,
+    method: 'get',
+    params: parameter
   })
 }

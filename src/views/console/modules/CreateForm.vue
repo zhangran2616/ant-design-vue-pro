@@ -5,6 +5,7 @@
     :visible="visible"
     :confirmLoading="loading"
     :maskClosable="maskClosable"
+    :cpfList="cpfList"
     @ok="() => { $emit('ok') }"
     @cancel="() => { $emit('cancel') }"
   >
@@ -13,10 +14,11 @@
         <a-form-item label="云平台">
           <a-select
             v-decorator="[
-              'cpfname',
+              'cpfId',
               { rules: [{ required: true, message: '云平台不能为空' }] },
             ]"
             placeholder="请选择云平台"
+            @change="getDc"
           >
             <a-select-option :value="item.id" v-for="(item, index) in cpfList" :key="index">
               {{ item.name }}
@@ -29,7 +31,7 @@
             <p class="title-text">基本信息</p>
           </div>
           <a-form-item label="实例名称">
-            <a-input v-decorator="['vmName', {rules: [{required: true, message: '实例名称不能为空'}]}]" />
+            <a-input v-decorator="['vmName', {rules: [{required: true, min: 1, max: 1000, message: '请输入实例名称长度1-1000个字符！'}]}]" />
           </a-form-item>
           <a-form-item label="CPU">
             <a-input addon-after=" 核 " v-decorator="['cpu', {rules: [{required: true, message: 'CPU不能为空'}]}]" />
@@ -50,8 +52,9 @@
                 { rules: [{ required: true, message: '数据中心不能为空' }] },
               ]"
               placeholder="请选择数据中心"
+              @change="getTemplate"
             >
-              <a-select-option :value="item.id" v-for="(item, index) in datacenterList" :key="index">
+              <a-select-option :value="item.uuid" v-for="(item, index) in datacenterList" :key="index">
                 {{ item.name }}
               </a-select-option>
             </a-select>
@@ -249,7 +252,7 @@
               ]"
               placeholder="请选择放置文件夹"
             >
-              <a-select-option :value="item.id" v-for="(item, index) in fsList" :key="index">
+              <a-select-option :value="item.id" v-for="(item, index) in folderList" :key="index">
                 {{ item.name }}
               </a-select-option>
             </a-select>
@@ -266,9 +269,10 @@
 
 <script>
 import pick from 'lodash.pick'
+import { queryDc, queryHost, queryTemplate, queryCluster, queryStore, querySubnet, queryIp } from '@/api/resource'
 
 // 表单字段
-const fields = ['description', 'id']
+const fields = ['cpfId', 'vmName']
 let id = 0
 let ip = 0
 export default {
@@ -284,6 +288,10 @@ export default {
     model: {
       type: Object,
       default: () => null
+    },
+    cpfList: {
+      type: Array,
+      default: () => []
     }
   },
   data () {
@@ -316,65 +324,16 @@ export default {
       },
       // form: this.$form.createForm(this),
       maskClosable: false,
-      cpfList: [],
-      datacenterList: [
-        {
-          id: 1,
-          name: '数据中心1'
-        }
-      ],
-      templateList: [
-        {
-          id: 1,
-          name: '模板1'
-        }
-      ],
+      datacenterList: [],
+      templateList: [],
       systemDisk: 50,
-      clusterList: [
-        {
-          id: 1,
-          name: '集群'
-        }
-      ],
-      hostList: [
-        {
-          id: 1,
-          name: '宿主机'
-        }
-      ],
-      storageList: [
-        {
-          id: 1,
-          name: '存储'
-        }
-      ],
-      storageTypeList: [
-        {
-          id: 1,
-          name: '与原格式相同'
-        }
-      ],
-      networkList: [
-        {
-          id: 1,
-          name: '子网'
-        },
-        {
-          id: 2,
-          name: '子网2'
-        },
-        {
-          id: 3,
-          name: '子网3'
-        }
-      ],
+      clusterList: [],
+      hostList: [],
+      storageList: [],
+      storageTypeList: [],
+      networkList: [],
       ipList: {},
-      fsList: [
-        {
-          id: 1,
-          name: '不选择'
-        }
-      ],
+      folderList: [],
       networkId: ''
     }
   },
@@ -457,6 +416,64 @@ export default {
     networksChange (id) {
       this.networkId = id
       this.ipList[id] = [{ id: 1, name: 'ip' + id }]
+    },
+    getDc (cpfId) {
+      const requestParameters = { 'pageSize': -1, 'cpfId': cpfId }
+      queryDc(requestParameters)
+      .then(res => {
+       this.datacenterList = res.data.records
+      })
+    },
+    getCluster (dcuuid) {
+      const cpfId = this.form.getFieldValue('cpfId')
+      const requestParameters = { 'pageSize': -1, 'cpfId': cpfId, 'uuid': dcuuid }
+      queryCluster(requestParameters)
+      .then(res => {
+       this.clusterList = res.data.records
+      })
+    },
+    getTemplate (dcuuid) {
+      const cpfId = this.form.getFieldValue('cpfId')
+      const requestParameters = { 'pageSize': -1, 'cpfId': cpfId, 'uuid': dcuuid }
+      queryTemplate(requestParameters)
+      .then(res => {
+       this.templateList = res.data.records
+      })
+      this.getCluster(dcuuid)
+      this.getHost(dcuuid)
+      this.getStore(dcuuid)
+      this.getSubnet(dcuuid)
+    },
+    getHost (dcuuid) {
+      const cpfId = this.form.getFieldValue('cpfId')
+      const requestParameters = { 'pageSize': -1, 'cpfId': cpfId, 'uuid': dcuuid }
+      queryHost(requestParameters)
+      .then(res => {
+       this.hostList = res.data.records
+      })
+    },
+    getStore (dcuuid) {
+      const cpfId = this.form.getFieldValue('cpfId')
+      const requestParameters = { 'pageSize': -1, 'cpfId': cpfId, 'uuid': dcuuid }
+      queryStore(requestParameters)
+      .then(res => {
+       this.storageList = res.data.records
+      })
+    },
+    getSubnet (dcuuid) {
+      const cpfId = this.form.getFieldValue('cpfId')
+      const requestParameters = { 'pageSize': -1, 'cpfId': cpfId, 'uuid': dcuuid }
+      querySubnet(requestParameters)
+      .then(res => {
+       this.networkList = res.data.records
+      })
+    },
+    getIp (subnetId) {
+      const requestParameters = { 'pageSize': -1, 'subnetId': subnetId }
+      queryIp(requestParameters)
+      .then(res => {
+       this.networkList = res.data.records
+      })
     }
   }
 }
