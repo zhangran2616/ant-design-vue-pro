@@ -18,6 +18,7 @@
               { rules: [{ required: true, message: '云平台不能为空' }] },
             ]"
             placeholder="请选择云平台"
+            allowClear
             @change="getDc"
           >
             <a-select-option :value="item.id" v-for="(item, index) in cpfList" :key="index">
@@ -48,10 +49,11 @@
           <a-form-item label="数据中心">
             <a-select
               v-decorator="[
-                'datacenterId',
+                'dcMOR',
                 { rules: [{ required: true, message: '数据中心不能为空' }] },
               ]"
               placeholder="请选择数据中心"
+              allowClear
               @change="getTemplate"
             >
               <a-select-option :value="item.uuid" v-for="(item, index) in datacenterList" :key="index">
@@ -62,10 +64,11 @@
           <a-form-item label="模板">
             <a-select
               v-decorator="[
-                'template',
+                'templateId',
                 { rules: [{ required: true, message: '模板不能为空' }] },
               ]"
               placeholder="请选择模板"
+              allowClear
             >
               <a-select-option :value="item.id" v-for="(item, index) in templateList" :key="index">
                 {{ item.name }}
@@ -97,7 +100,7 @@
                     {
                       required: true,
                       whitespace: true,
-                      message: '数据盘不能为空',
+                      validator: numberValidator
                     },
                   ],
                 },
@@ -129,6 +132,7 @@
                 { rules: [{ required: false, message: '集群不能为空' }] },
               ]"
               placeholder="请选择集群"
+              allowClear
             >
               <a-select-option :value="item.id" v-for="(item, index) in clusterList" :key="index">
                 {{ item.name }}
@@ -138,10 +142,11 @@
           <a-form-item label="宿主机">
             <a-select
               v-decorator="[
-                'host',
+                'hostSystemId',
                 { rules: [{ required: true, message: '宿主机不能为空' }] },
               ]"
               placeholder="请选择宿主机"
+              allowClear
             >
               <a-select-option :value="item.id" v-for="(item, index) in hostList" :key="index">
                 {{ item.name }}
@@ -151,23 +156,25 @@
           <a-form-item label="存储">
             <a-select
               v-decorator="[
-                'storage',
+                'storeId',
                 { rules: [{ required: true, message: '存储不能为空' }] },
               ]"
               placeholder="请选择存储"
+              allowClear
             >
               <a-select-option :value="item.id" v-for="(item, index) in storageList" :key="index">
                 {{ item.name }}
               </a-select-option>
             </a-select>
           </a-form-item>
-          <a-form-item label="制备模式">
+          <a-form-item label="置备模式">
             <a-select
               v-decorator="[
                 'storageType',
-                { rules: [{ required: false, message: '制备模式不能为空' }] },
+                { rules: [{ required: false, message: '置备模式不能为空' }] },
               ]"
-              placeholder="请选择制备模式"
+              placeholder="请选择置备模式"
+              allowClear
             >
               <a-select-option :value="item.id" v-for="(item, index) in storageTypeList" :key="index">
                 {{ item.name }}
@@ -196,7 +203,7 @@
             >
               <a-select
                 v-decorator="[
-                  `networks[${index}]`,
+                  `subnets[${index}]`,
                   { rules: [{ required: true, message: '子网不能为空' }] },
                 ]"
                 placeholder="请选择子网"
@@ -222,7 +229,7 @@
                 placeholder="请选择子网"
                 style="margin-right: 8px"
               >
-                <a-select-option :value="item.id" v-for="(item, j) in ipList" :key="j">
+                <a-select-option :value="item.ip" v-for="(item, j) in ipList" :key="j">
                   {{ item.ip }}
                 </a-select-option>
               </a-select>
@@ -247,7 +254,7 @@
           <a-form-item label="放置文件夹">
             <a-select
               v-decorator="[
-                'fs',
+                'folder',
                 { rules: [{ required: false, message: '放置文件夹不能为空' }] },
               ]"
               placeholder="请选择放置文件夹"
@@ -259,7 +266,7 @@
           </a-form-item>
           <a-form-item label="实例备注">
             <!-- a-textarea -->
-            <a-textarea v-decorator="['remarks', {rules: [{required: false, message: '实例备注不能为空'}]}]" />
+            <a-textarea v-decorator="['description', {rules: [{required: false, message: '实例备注不能为空'}]}]" />
           </a-form-item>
         </div>
       </a-form>
@@ -272,7 +279,7 @@ import pick from 'lodash.pick'
 import { queryDc, queryHost, queryTemplate, queryCluster, queryStore, querySubnet, queryIp } from '@/api/resource'
 
 // 表单字段
-const fields = ['cpfId', 'vmName', 'cpu', 'memory']
+const fields = ['cpfId', 'vmName', 'cpu', 'memory', 'dcMOR', 'templateId', 'clusterId', 'hostSystemId', 'storeId', 'folder', 'description', 'subnets', 'ips']
 let id = 0
 let ip = 0
 export default {
@@ -319,7 +326,7 @@ export default {
             callback(new Error('请输入正整数'))
           }
         } else {
-          callback(new Error('请输入正确的规格'))
+          callback(new Error('请输入正确的数值'))
         }
       },
       formItemLayout: {
@@ -408,6 +415,13 @@ export default {
       })
     },
     getDc (cpfId) {
+      this.form.setFieldsValue({
+        dcMOR: undefined,
+        clusterId: undefined,
+        templateId: undefined,
+        hostSystemId: undefined,
+        storeId: undefined
+      })
       const requestParameters = { 'pageSize': -1, 'cpfId': cpfId }
       queryDc(requestParameters)
       .then(res => {
@@ -415,6 +429,9 @@ export default {
       })
     },
     getCluster (dcuuid) {
+      this.form.setFieldsValue({
+        clusterId: undefined
+      })
       const cpfId = this.form.getFieldValue('cpfId')
       const requestParameters = { 'pageSize': -1, 'cpfId': cpfId, 'uuid': dcuuid }
       queryCluster(requestParameters)
@@ -423,6 +440,9 @@ export default {
       })
     },
     getTemplate (dcuuid) {
+      this.form.setFieldsValue({
+        templateId: undefined
+      })
       const cpfId = this.form.getFieldValue('cpfId')
       const requestParameters = { 'pageSize': -1, 'cpfId': cpfId, 'uuid': dcuuid }
       queryTemplate(requestParameters)
@@ -435,6 +455,9 @@ export default {
       this.getSubnet(dcuuid)
     },
     getHost (dcuuid) {
+      this.form.setFieldsValue({
+        hostSystemId: undefined
+      })
       const cpfId = this.form.getFieldValue('cpfId')
       const requestParameters = { 'pageSize': -1, 'cpfId': cpfId, 'uuid': dcuuid }
       queryHost(requestParameters)
@@ -443,6 +466,9 @@ export default {
       })
     },
     getStore (dcuuid) {
+      this.form.setFieldsValue({
+        storeId: undefined
+      })
       const cpfId = this.form.getFieldValue('cpfId')
       const requestParameters = { 'pageSize': -1, 'cpfId': cpfId, 'uuid': dcuuid }
       queryStore(requestParameters)

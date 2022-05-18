@@ -14,6 +14,7 @@ const api = {
   queryHost: '/cmp/platform/queryHost',
   queryStore: '/cmp/platform/queryStore',
   queryVm: '/cmp/vm/queryVm',
+  createVm: '/cmp/vm/create',
   queryDc: '/cmp/platform/queryDc',
   queryNetworkLabel: '/cmp/platform/queryNetworkLabel',
   queryTemplate: '/cmp/platform/queryTemplate',
@@ -130,6 +131,14 @@ export function queryVm (parameter) {
     url: api.queryVm,
     method: 'get',
     params: parameter
+  })
+}
+
+export function createVm (parameter) {
+  return request({
+    url: api.createVm,
+    method: 'post',
+    data: parameter
   })
 }
 

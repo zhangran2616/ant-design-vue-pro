@@ -5,7 +5,7 @@
         <a-form layout="inline">
           <a-row :gutter="48">
             <a-col :md="6" :sm="24">
-              <a-form-item label="机器名">
+              <a-form-item label="实例名称">
                 <a-input v-model="queryParam.name" placeholder=""/>
               </a-form-item>
             </a-col>
@@ -15,7 +15,7 @@
               </a-form-item>
             </a-col>
             <a-col :md="4" :sm="24">
-              <a-form-item label="机器状态">
+              <a-form-item label="实例状态">
                 <a-select v-model="queryParam.instanceStatus" placeholder="请选择">
                   <a-select-option value="">全部</a-select-option>
                   <a-select-option value="1">开机</a-select-option>
@@ -131,7 +131,7 @@
 <script>
 import moment from 'moment'
 import { STable, Ellipsis } from '@/components'
-import { queryVm, powerOn, shutdown, reboot, powerOff, suspend, destroy, queryPlatform } from '@/api/resource'
+import { queryVm, powerOn, shutdown, reboot, powerOff, suspend, destroy, queryPlatform, createVm } from '@/api/resource'
 import CreateForm from './modules/CreateForm'
 import { Modal } from 'ant-design-vue'
 
@@ -241,11 +241,11 @@ export default {
       this.confirmLoading = true
       form.validateFields((errors, values) => {
         if (!errors) {
-            queryVm(values).then(res => {
+            createVm(values).then(res => {
               if (res.code !== 0) {
                 this.$message.error(res.message)
               } else {
-                this.$message.success('新增成功')
+                this.$message.success('开始安装虚拟机，请稍后查看列表')
               }
             }).finally(() => {
                 this.visible = false
