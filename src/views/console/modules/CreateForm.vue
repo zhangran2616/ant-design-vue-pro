@@ -93,7 +93,7 @@
           >
             <a-input
               v-decorator="[
-                `disks[${k}]`,
+                `diskSize[${k}]`,
                 {
                   validateTrigger: ['change', 'blur'],
                   rules: [
@@ -170,15 +170,15 @@
           <a-form-item label="置备模式">
             <a-select
               v-decorator="[
-                'storageType',
+                'diskProvisioningMode',
                 { rules: [{ required: false, message: '置备模式不能为空' }] },
               ]"
               placeholder="请选择置备模式"
               allowClear
             >
-              <a-select-option :value="item.id" v-for="(item, index) in storageTypeList" :key="index">
-                {{ item.name }}
-              </a-select-option>
+              <a-select-option value="thinProvisioned">精简置备</a-select-option>
+              <a-select-option value="eagerlyScrub">厚置备置零</a-select-option>
+              <a-select-option value="eagerlyScrubDelay">厚置备延迟置零</a-select-option>
             </a-select>
           </a-form-item>
         </div>
@@ -279,7 +279,7 @@ import pick from 'lodash.pick'
 import { queryDc, queryHost, queryTemplate, queryCluster, queryStore, querySubnet, queryIp } from '@/api/resource'
 
 // 表单字段
-const fields = ['cpfId', 'vmName', 'cpu', 'memory', 'dcMOR', 'templateId', 'clusterId', 'hostSystemId', 'storeId', 'folder', 'description', 'subnets', 'ips']
+const fields = ['cpfId', 'vmName', 'cpu', 'memory', 'dcMOR', 'templateId', 'clusterId', 'hostSystemId', 'storeId', 'diskSize', 'diskProvisioningMode', 'folder', 'description', 'subnets', 'ips']
 let id = 0
 let ip = 0
 export default {
@@ -353,7 +353,6 @@ export default {
       clusterList: [],
       hostList: [],
       storageList: [],
-      storageTypeList: [],
       networkList: [],
       ipList: [],
       folderList: []
