@@ -33,16 +33,16 @@
           <a-input v-decorator="['name', {rules: [{required: true, min: 1, max: 200, message: '请输入名称长度1-200个字符！'}]}]" />
         </a-form-item>
         <a-form-item label="IP范围">
-          <a-input :disabled=" model && model.id > 0 " v-decorator="['ipPool', {rules: [{required: true, min: 1,max: 200, message: '请输入IP范围长度1-200个字符！'}]}]" />
+          <a-input :disabled=" model && model.id > 0 " v-decorator="['ipPool', {rules: [{required: true, validator: ipPoolValidator}]}]" />
         </a-form-item>
         <a-form-item label="网关">
-          <a-input v-decorator="['gateway', {rules: [{required: true, min: 1,max: 20, message: '请输入网关长度1-20个字符！'}]}]" />
+          <a-input v-decorator="['gateway', {rules: [{required: true ,validator: gatewayValidator}]}]" />
         </a-form-item>
         <a-form-item label="掩码">
-          <a-input v-decorator="['mask', {rules: [{required: true, min: 1, max: 20, message: '请输入掩码长度1-20个字符！'}]}]" />
+          <a-input v-decorator="['mask', {rules: [{required: true, validator: maskValidator}]}]" />
         </a-form-item>
         <a-form-item label="DNS1">
-          <a-input v-decorator="['dns1', {rules: [{required: true, min: 1,max: 20, message: '请输入DNS1长度1-20个字符！'}]}]" />
+          <a-input v-decorator="['dns1', {rules: [{required: true, validator: dnsValidator}]}]" />
         </a-form-item>
         <a-form-item label="DNS2">
           <a-input v-decorator="['dns2', {rules: [{required: false, min: 1,max: 20, message: '请输入DNS2长度1-20个字符！'}]}]" />
@@ -92,7 +92,39 @@ export default {
     return {
       form: this.$form.createForm(this),
       datacenters: [],
-      networkLabels: []
+      networkLabels: [],
+      ipPoolValidator: (rule, value, callback) => {
+        const reg = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)-([0-9]{1,2}|1[0-9]{1,2}|2[0-4][0-9]|25[0-5])$/
+        if (!reg.test(value)) {
+          callback(new Error('请输入正确的IP地址段'))
+        } else {
+          callback()
+        }
+      },
+      gatewayValidator: (rule, value, callback) => {
+        const reg = /^192\.168(\.(\d|([1-9]\d)|(1\d{2})|(2[0-4]\d)|(25[0-5]))){2}$/
+        if (!reg.test(value)) {
+          callback(new Error('请输入正确的网关地址'))
+        } else {
+          callback()
+        }
+      },
+      maskValidator: (rule, value, callback) => {
+        const reg = /^((128|192)|2(24|4[08]|5[245]))(\.(0|(128|192)|2((24)|(4[08])|(5[245])))){3}$/
+        if (!reg.test(value)) {
+          callback(new Error('请输入正确的掩码地址'))
+        } else {
+          callback()
+        }
+      },
+      dnsValidator: (rule, value, callback) => {
+        const reg = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/
+        if (!reg.test(value)) {
+          callback(new Error('请输入正确的DNS地址'))
+        } else {
+          callback()
+        }
+      }
     }
   },
 

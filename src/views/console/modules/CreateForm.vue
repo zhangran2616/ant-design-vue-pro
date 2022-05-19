@@ -477,7 +477,7 @@ export default {
     },
     getSubnet (dcuuid) {
       const cpfId = this.form.getFieldValue('cpfId')
-      const requestParameters = { 'pageSize': -1, 'cpfId': cpfId, 'uuid': dcuuid }
+      const requestParameters = { 'pageSize': -1, 'cpfId': cpfId, 'uuid': dcuuid, 'status': 0 }
       querySubnet(requestParameters)
       .then(res => {
        this.networkList = res.data.records
