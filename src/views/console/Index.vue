@@ -440,6 +440,17 @@ export default {
     },
     handleMenuClick (key) {
       console.log('click', key)
+      if (key.key === 'powderOff') {
+        this.powerOffVm()
+      } else if (key.key === 'suspend') {
+        this.suspendVm()
+      } else if (key.key === 'powerOn') {
+        this.powerOnVm()
+      } else if (key.key === 'destroy') {
+        this.destroyVm()
+      } else {
+        this.$message.error('暂不支持该操作')
+      }
     }
   }
 }

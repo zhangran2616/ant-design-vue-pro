@@ -1,6 +1,6 @@
 <template>
   <div class="table">
-    <a-table :columns="columns" :pagination="false" :data-source="tableData">
+    <a-table :columns="columns" :pagination="false" :data-source="tableData" rowKey="id">
       <span slot="state" slot-scope="state">
         <a-tag
           :color="state === '正常' ? '#27c787' : '#fd7b79'"
