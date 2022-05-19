@@ -82,16 +82,16 @@ const columns = [
     title: '网络I/O速率',
     dataIndex: 'network',
     customRender: (text, record, index) => {
-      return text.HOST_NET_IN_PKG.toFixed(2).replace(/[.]?0+$/, '') + '%' + ' ' + text.HOST_NET_OUT_PKG.toFixed(2).replace(/[.]?0+$/, '') + '%'
+      return text.HOST_NET_IN_PKG.toFixed(2).replace(/[.]?0+$/, '') + ' KBps' + ' / ' + text.HOST_NET_OUT_PKG.toFixed(2).replace(/[.]?0+$/, '') + ' KBps'
     }
   },
-  {
-    title: '磁盘I/O速率',
-    dataIndex: 'disk'
-    // customRender: (text, record, index) => {
-    //   return text.HOST_NET_IN_PKG.toFixed(2).replace(/[.]?0+$/, '') + '%' + ' ' + text.HOST_NET_OUT_PKG.toFixed(2).replace(/[.]?0+$/, '') + '%'
-    // }
-  },
+  // {
+  //   title: '磁盘I/O速率',
+  //   dataIndex: 'disk'
+  //   // customRender: (text, record, index) => {
+  //   //   return text.HOST_NET_IN_PKG.toFixed(2).replace(/[.]?0+$/, '') + '%' + ' ' + text.HOST_NET_OUT_PKG.toFixed(2).replace(/[.]?0+$/, '') + '%'
+  //   // }
+  // },
   {
     title: '操作',
     dataIndex: 'action',

@@ -9,8 +9,9 @@
         <div class="top">
           <div class="header">
             <a href="/">
-              <img src="~@/assets/logo.svg" class="logo" alt="logo">
-              <span class="title">Ant Design</span>
+              <!-- <img src="~@/assets/logo.svg" class="logo" alt="logo"> -->
+              <img src="/ty.png" class="logo" alt="logo">
+              <span class="title">CMP</span>
             </a>
           </div>
           <div class="desc">
@@ -27,7 +28,7 @@
             <a href="_self">条款</a>
           </div>
           <div class="copyright">
-            Copyright &copy; 2018 vueComponent
+            <a href="http://www.tuocloud.cn" target="_blank"> © 上海拓云信息科技有限公司  |  沪ICP备19040945号-1</a>
           </div>
         </div>
       </div>
