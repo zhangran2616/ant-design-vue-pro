@@ -30,8 +30,11 @@
                   :labelCol="{lg: {span: 7}, sm: {span: 7}}"
                   :wrapperCol="{lg: {span: 10}, sm: {span: 17} }">
                   <a-range-picker
+                    v-model="queryParam.lastLoginTime"
                     name="buildTime"
                     style="width: 100%"
+                    show-time
+                    valueFormat="YYYY-MM-DD HH:mm:ss"
                   />
                 </a-form-item>
               </a-col>

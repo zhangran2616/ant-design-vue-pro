@@ -16,7 +16,7 @@
             </a-col>
             <a-col :md="4" :sm="24">
               <a-form-item label="实例状态">
-                <a-select v-model="queryParam.instanceStatus" placeholder="请选择">
+                <a-select allowClear v-model="queryParam.instanceStatus" placeholder="请选择">
                   <a-select-option value="">全部</a-select-option>
                   <a-select-option value="1">开机</a-select-option>
                   <a-select-option value="2">关机</a-select-option>
@@ -26,11 +26,8 @@
             </a-col>
             <a-col :md="4" :sm="24">
               <a-form-item label="云平台">
-                <a-select v-model="queryParam.cpfId" placeholder="请选择">
-                  <a-select-option value="">全部</a-select-option>
-                  <a-select-option value="1">开机</a-select-option>
-                  <a-select-option value="2">关机</a-select-option>
-                  <a-select-option value="3">挂起</a-select-option>
+                <a-select allowClear @click.native="handlePlatformList()" v-model="queryParam.cpfId" placeholder="请选择" default-value="">
+                  <a-select-option v-for="(item, index) in cpfList" :value="item.id" :key="index">{{ item.name }}</a-select-option>
                 </a-select>
               </a-form-item>
             </a-col>
@@ -41,8 +38,11 @@
                   :labelCol="{lg: {span: 7}, sm: {span: 7}}"
                   :wrapperCol="{lg: {span: 10}, sm: {span: 17} }">
                   <a-range-picker
+                    nv-model="queryParam.createTime"
                     name="buildTime"
                     style="width: 100%"
+                    show-time
+                    valueFormat="YYYY-MM-DD HH:mm:ss"
                   />
                 </a-form-item>
               </a-col>

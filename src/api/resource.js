@@ -1,4 +1,5 @@
 import request from '@/utils/request'
+import qs from 'qs'
 
 const api = {
   querySubnet: '/cmp/network/querySubnet',
@@ -130,7 +131,10 @@ export function queryVm (parameter) {
   return request({
     url: api.queryVm,
     method: 'get',
-    params: parameter
+    params: parameter,
+    paramsSerializer: params => {
+      return qs.stringify(params, { indices: false })
+    }
   })
 }
 

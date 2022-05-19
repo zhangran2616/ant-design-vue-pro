@@ -1,4 +1,5 @@
 import request from '@/utils/request'
+import qs from 'qs'
 
 const api = {
   user: '/cmp/user/queryUser',
@@ -24,7 +25,10 @@ export function getUserList (parameter) {
   return request({
     url: api.user,
     method: 'get',
-    params: parameter
+    params: parameter,
+    paramsSerializer: params => {
+      return qs.stringify(params, { indices: false })
+    }
   })
 }
 
@@ -112,7 +116,10 @@ export function queryLog (parameter) {
   return request({
     url: api.queryLog,
     method: 'get',
-    params: parameter
+    params: parameter,
+    paramsSerializer: params => {
+      return qs.stringify(params, { indices: false })
+    }
   })
 }
 
