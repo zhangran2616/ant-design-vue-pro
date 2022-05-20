@@ -94,6 +94,7 @@
         :alert="true"
         :rowSelection="rowSelection"
         showPagination="auto"
+        :rowClassName="isCreateRow"
       >
         <span slot="serial" slot-scope="text, record, index">
           {{ index + 1 }}
@@ -103,6 +104,7 @@
           <a-tag v-else-if="text === 1" color="green">开机</a-tag>
           <a-tag v-else-if="text === 2" color="volcano">关机</a-tag>
           <a-tag v-else-if="text === 3" color="yellow">挂起</a-tag>
+          <a-tag v-if="text === 10" color="blue"><a-icon type="loading" /></a-tag>
         </span>
         <span slot="action" slot-scope="text, record">
           <template>
@@ -142,7 +144,14 @@ const columns = [
   },
   {
     title: '名称',
-    dataIndex: 'name'
+    dataIndex: 'name',
+    customRender: (text, record, index) => {
+      if (record.instanceStatus === 10) {
+        return text + '（创建中）'
+      } else {
+        return text
+      }
+    }
   },
   {
     title: 'IP地址',
@@ -451,7 +460,22 @@ export default {
       } else {
         this.$message.error('暂不支持该操作')
       }
+    },
+    isCreateRow (record, index) {
+      if (record.instanceStatus === 10) {
+        return 'isCreate'
+      }
     }
   }
 }
 </script>
+<style lang="less" scoped>
+/deep/.isCreate {
+  animation: flashIng 2s infinite linear forwards;
+}
+@keyframes flashIng {
+  0% { color: blue }
+  50% { color: #ddd }
+  100% { color: blue }
+}
+</style>
