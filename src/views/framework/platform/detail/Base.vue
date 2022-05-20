@@ -9,8 +9,8 @@
             <a-descriptions-item label="IP">{{ platformDetail.ip }}</a-descriptions-item>
             <a-descriptions-item label="版本号">{{ platformDetail.version }}</a-descriptions-item>
             <a-descriptions-item label="同步用户">{{ platformDetail.username }}</a-descriptions-item>
-            <a-descriptions-item label="同步状态">{{ platformDetail.status }}</a-descriptions-item>
-            <a-descriptions-item label="上次同步">{{ platformDetail.createTime }}</a-descriptions-item>
+            <a-descriptions-item label="同步状态">{{ platformDetail.sync }}</a-descriptions-item>
+            <a-descriptions-item label="上次同步">{{ platformDetail.lastSyncTime }}</a-descriptions-item>
             <a-descriptions-item label="添加时间">{{ platformDetail.createTime }}</a-descriptions-item>
           </a-descriptions>
           <a-divider style="margin-bottom: 32px"/>
