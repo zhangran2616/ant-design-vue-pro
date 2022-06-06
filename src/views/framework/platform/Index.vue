@@ -52,7 +52,7 @@
 
 <script>
 import { STable, Ellipsis } from '@/components'
-import { queryPlatform, addPlatform, updatePlatform, deletePlatform, isOnline } from '@/api/resource'
+import { queryPlatform, addPlatform, updatePlatform, deletePlatform, isOnline, syncPlatform } from '@/api/resource'
 import CreateForm from './modules/CreateForm'
 import { Modal } from 'ant-design-vue'
 
@@ -151,6 +151,21 @@ export default {
     handleEdit (record) {
       this.visible = true
       this.mdl = { ...record }
+    },
+    handleSync (record) {
+      const params = {
+        id: record.id
+      }
+      syncPlatform(params).then(res => {
+        if (res.code !== 0) {
+          this.$message.error(res.message)
+        } else {
+          this.$message.success('同步开始，请稍后查询同步结果')
+        }
+      }).finally(() => {
+            // 刷新表格
+        this.$refs.table.refresh()
+      })
     },
     handleOk () {
       const form = this.$refs.createModal.form

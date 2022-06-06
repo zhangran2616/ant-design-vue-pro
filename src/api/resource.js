@@ -11,6 +11,7 @@ const api = {
   addPlatform: '/cmp/platform/addPlatform',
   updatePlatform: '/cmp/platform/updatePlatform',
   deletePlatform: '/cmp/platform/deletePlatform',
+  syncPlatform: '/cmp/platform/sync',
   queryCluster: '/cmp/platform/queryCluster',
   queryHost: '/cmp/platform/queryHost',
   queryStore: '/cmp/platform/queryStore',
@@ -98,6 +99,14 @@ export function updatePlatform (parameter) {
 export function deletePlatform (parameter) {
   return request({
     url: api.deletePlatform,
+    method: 'get',
+    params: parameter
+  })
+}
+
+export function syncPlatform (parameter) {
+  return request({
+    url: api.syncPlatform,
     method: 'get',
     params: parameter
   })
